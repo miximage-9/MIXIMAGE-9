@@ -1,16 +1,39 @@
-## Hi there 👋
+# MIXIMAGE 👋
 
-<!--
-**miximage-9/MIXIMAGE-9** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Creative AI, Web Development, Digital Imaging, and Music Production by MIXIMAGE.
 
-Here are some ideas to get you started:
+## About Me
+I’m Nattanon Wongkasai, also known as MIXIMAGE.  
+I work across graphic design, web development, digital imaging, and AI-powered music production.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## What I Do
+- Graphic Design
+- Web Development
+- Digital Imaging
+- Generative AI for image, video, and audio
+- AI Music Production
+
+## Creative Focus
+- Sci-Fi
+- Mecha
+- Cinematic
+- Realistic
+- Realism
+
+## Tools I Use
+- Adobe Creative Suite
+- ChatGPT
+- Gemini
+- Suno
+- Cloud Tools
+- Canon EOS R50
+- Canon 60D
+
+## Links
+- Website: http://miximage.one
+- YouTube: https://www.youtube.com/@MIXNATTANON
+- Facebook: https://www.facebook.com/
+- Email: mix@miximage.one
+
+## Vision
+More than creating images — we create feelings.
