@@ -32,7 +32,7 @@ I work across graphic design, web development, digital imaging, and AI-powered m
 ## Links
 - Website: http://miximage.one
 - YouTube: https://www.youtube.com/@MIXNATTANON
-- Facebook: https://www.facebook.com/
+- Facebook: https://www.facebook.com/mix.nattanon
 - Email: mix@miximage.one
 
 ## Vision
