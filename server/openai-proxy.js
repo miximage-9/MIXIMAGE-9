@@ -114,9 +114,20 @@ function buildOpenAiPayload(body) {
     model: MODEL,
     input,
     reasoning: { effort: "minimal" },
-    text: { verbosity: "low" },
-    max_output_tokens: payload.maxOutputTokens || 700,
+    text: { verbosity: tool === "youtube" ? "medium" : "low" },
+    max_output_tokens: getMaxOutputTokens(tool, payload),
   };
+}
+
+function getMaxOutputTokens(tool, payload) {
+  const requested = Number(payload.maxOutputTokens);
+  if (Number.isFinite(requested) && requested > 0) {
+    return Math.min(requested, 3000);
+  }
+
+  if (tool === "youtube") return 2400;
+  if (tool === "image" || tool === "enhancer") return 1200;
+  return 900;
 }
 
 const toolPrompts = {

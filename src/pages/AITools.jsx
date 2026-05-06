@@ -209,7 +209,7 @@ function AITools({ onCopy, onSavePrompt }) {
               onGenerate={() =>
                 generate("youtube", {
                   ...youtubeForm,
-                  maxOutputTokens: 1300,
+                  maxOutputTokens: 2400,
                 })
               }
               onSavePreset={saveYoutubePreset}
