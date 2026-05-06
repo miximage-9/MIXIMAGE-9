@@ -37,7 +37,7 @@ const socialLinks = [
 
 function Sidebar({ activePage, clipboardCount, onNavigate, promptCount }) {
   return (
-    <aside className="min-w-0 overflow-hidden rounded-[26px] border border-white/65 bg-white/55 p-3 shadow-glass backdrop-blur-xl lg:sticky lg:top-3 lg:h-[calc(100vh-1.5rem)]">
+    <aside className="min-w-0 rounded-[26px] border border-white/65 bg-white/55 p-3 shadow-glass backdrop-blur-xl lg:sticky lg:top-3 lg:max-h-[calc(100vh-1.5rem)] lg:overflow-y-auto">
       <div className="flex min-w-0 items-center gap-3 rounded-[22px] bg-white/55 p-2.5 shadow-sm">
         <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white shadow-soft">
           <Sparkles className="h-4 w-4" />

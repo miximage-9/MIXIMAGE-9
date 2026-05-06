@@ -196,7 +196,7 @@ function AITools({ onCopy, onSavePrompt }) {
         </div>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <ToolPanel title={toolLabels[activeTool]}>
           {activeTool === "youtube" && (
             <YoutubeDescriptionTool
@@ -492,7 +492,7 @@ function ImageTool({ form, loading, onChange, onGenerate }) {
 
 function OutputPanel({ onCopy, onSave, onSendImageToCaption, output }) {
   return (
-    <section className="rounded-[26px] border border-white/65 bg-white/55 p-4 shadow-soft backdrop-blur-lg">
+    <section className="rounded-[26px] border border-white/65 bg-white/55 p-4 shadow-soft backdrop-blur-lg xl:sticky xl:top-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-slate-950">ผลลัพธ์</h2>
         <div className="flex gap-2">
@@ -505,7 +505,7 @@ function OutputPanel({ onCopy, onSave, onSendImageToCaption, output }) {
         </div>
       </div>
 
-      <div className="min-h-[320px] whitespace-pre-wrap rounded-[22px] border border-white/70 bg-white/50 p-4 text-sm leading-7 text-slate-700 shadow-sm">
+      <div className="max-h-[58vh] min-h-[260px] overflow-y-auto whitespace-pre-wrap rounded-[22px] border border-white/70 bg-white/50 p-4 pr-5 text-sm leading-7 text-slate-700 shadow-sm">
         {output || "ผลลัพธ์จะมาแสดงตรงนี้หลังจากกดสร้าง"}
       </div>
 
