@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.codex-vite*.log
+.edge-*-profile/
+prompt-manager-*-preview.png
+toolbox-*-preview.png
+thai-*-preview.png
+compact-*-preview.png
+.openai-proxy*.log
