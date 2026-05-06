@@ -1,6 +1,6 @@
 import http from "node:http";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -9,6 +9,9 @@ const HOST = process.env.HOST || "0.0.0.0";
 const MODEL = process.env.OPENAI_MODEL || "gpt-5-mini";
 const MAX_BODY_BYTES = 12 * 1024 * 1024;
 const DIST_DIR = path.resolve(fileURLToPath(new URL("../dist", import.meta.url)));
+const SYNC_FILE = path.resolve(
+  fileURLToPath(new URL("../.sync-data.json", import.meta.url))
+);
 
 const server = http.createServer(async (request, response) => {
   setCorsHeaders(response, request);
@@ -30,6 +33,11 @@ const server = http.createServer(async (request, response) => {
       model: MODEL,
       hasKey: Boolean(process.env.OPENAI_API_KEY),
     });
+    return;
+  }
+
+  if (pathname === "/api/sync") {
+    await handleLocalSync(request, response);
     return;
   }
 
@@ -312,6 +320,75 @@ function readJsonBody(request) {
 
     request.on("error", reject);
   });
+}
+
+async function handleLocalSync(request, response) {
+  const authError = validateLocalSyncKey(request);
+  if (authError) {
+    sendJson(response, authError.statusCode, { error: authError.error });
+    return;
+  }
+
+  if (request.method === "GET") {
+    sendJson(response, 200, { data: await readLocalSyncData() });
+    return;
+  }
+
+  if (request.method === "POST") {
+    const payload = await readJsonBody(request);
+    const data = normalizeSyncData(payload);
+    await writeFile(SYNC_FILE, JSON.stringify(data, null, 2), "utf8");
+    sendJson(response, 200, { ok: true, updatedAt: data.updatedAt });
+    return;
+  }
+
+  sendJson(response, 405, { error: "รองรับเฉพาะ GET และ POST เท่านั้น" });
+}
+
+function validateLocalSyncKey(request) {
+  const secret = process.env.SYNC_SECRET;
+  if (!secret) {
+    return { statusCode: 500, error: "ยังไม่ได้ตั้งค่า SYNC_SECRET" };
+  }
+
+  if (request.headers["x-sync-key"] !== secret) {
+    return { statusCode: 401, error: "รหัสซิงก์ไม่ถูกต้อง" };
+  }
+
+  return null;
+}
+
+async function readLocalSyncData() {
+  try {
+    return JSON.parse(await readFile(SYNC_FILE, "utf8"));
+  } catch {
+    return createEmptySyncData();
+  }
+}
+
+function normalizeSyncData(payload) {
+  return {
+    clipboardHistory: Array.isArray(payload.clipboardHistory)
+      ? payload.clipboardHistory.slice(0, 20)
+      : [],
+    prompts: Array.isArray(payload.prompts) ? payload.prompts : [],
+    updatedAt: new Date().toISOString(),
+    version: 1,
+    youtubePreset:
+      payload.youtubePreset && typeof payload.youtubePreset === "object"
+        ? payload.youtubePreset
+        : null,
+  };
+}
+
+function createEmptySyncData() {
+  return {
+    clipboardHistory: [],
+    prompts: [],
+    updatedAt: null,
+    version: 1,
+    youtubePreset: null,
+  };
 }
 
 async function serveStatic(request, response, pathname) {

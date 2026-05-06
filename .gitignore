@@ -3,6 +3,7 @@ dist/
 .env
 .env.*
 !.env.example
+.sync-data.json
 .codex-vite*.log
 .edge-*-profile/
 prompt-manager-*-preview.png

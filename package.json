@@ -8,6 +8,7 @@
     "start": "node server/openai-proxy.js"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.4",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
     "lucide-react": "^0.468.0",

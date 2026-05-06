@@ -7,14 +7,20 @@ import AITools from "./pages/AITools.jsx";
 import PromptLibrary from "./pages/PromptLibrary.jsx";
 import Workspace from "./pages/Workspace.jsx";
 
+const STORAGE_KEYS = {
+  clipboardHistory: "mixtoole-clipboard-history-th-v2",
+  prompts: "mixtoole-prompts-th-v2",
+  youtubePreset: "mixtoole-youtube-description-preset-v1",
+};
+
 function App() {
   const [activePage, setActivePage] = useState("prompts");
   const [prompts, setPrompts] = useLocalStorage(
-    "mixtoole-prompts-th-v2",
+    STORAGE_KEYS.prompts,
     defaultPrompts
   );
   const [clipboardHistory, setClipboardHistory] = useLocalStorage(
-    "mixtoole-clipboard-history-th-v2",
+    STORAGE_KEYS.clipboardHistory,
     []
   );
   const [toast, setToast] = useState(null);
@@ -87,6 +93,73 @@ function App() {
     });
   }
 
+  async function saveCloudSync(syncKey) {
+    const payload = {
+      clipboardHistory,
+      prompts,
+      youtubePreset: readLocalStorageValue(STORAGE_KEYS.youtubePreset, null),
+    };
+
+    const response = await fetch("/api/sync", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Sync-Key": syncKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "บันทึกขึ้นคลาวด์ไม่สำเร็จ");
+    }
+
+    setToast({
+      id: createId(),
+      message: "ซิงก์แล้ว",
+      detail: "บันทึกข้อมูลขึ้นคลาวด์",
+    });
+
+    return data;
+  }
+
+  async function loadCloudSync(syncKey) {
+    const response = await fetch("/api/sync", {
+      headers: {
+        "X-Sync-Key": syncKey,
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "โหลดข้อมูลจากคลาวด์ไม่สำเร็จ");
+    }
+
+    const workspace = data.data || {};
+    setPrompts(
+      Array.isArray(workspace.prompts) && workspace.prompts.length
+        ? workspace.prompts
+        : defaultPrompts
+    );
+    setClipboardHistory(
+      Array.isArray(workspace.clipboardHistory)
+        ? workspace.clipboardHistory.slice(0, 20)
+        : []
+    );
+    writeLocalStorageValue(
+      STORAGE_KEYS.youtubePreset,
+      workspace.youtubePreset || null
+    );
+    window.dispatchEvent(new Event("mixtoole-sync-restored"));
+    setToast({
+      id: createId(),
+      message: "โหลดแล้ว",
+      detail: "ข้อมูลจากคลาวด์พร้อมใช้",
+    });
+
+    return workspace;
+  }
+
   function renderPage() {
     if (activePage === "tools") {
       return (
@@ -102,6 +175,8 @@ function App() {
         <Workspace
           clipboardHistory={clipboardHistory}
           prompts={prompts}
+          onCloudLoad={loadCloudSync}
+          onCloudSave={saveCloudSync}
           onCopy={copyToClipboard}
         />
       );
@@ -134,6 +209,23 @@ function App() {
 
 function createId() {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+}
+
+function readLocalStorageValue(key, fallback) {
+  try {
+    const stored = window.localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeLocalStorageValue(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore storage failures in restricted browser modes.
+  }
 }
 
 async function writeTextToClipboard(text) {

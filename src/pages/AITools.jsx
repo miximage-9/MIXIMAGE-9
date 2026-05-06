@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Captions,
   Copy,
@@ -70,6 +70,21 @@ function AITools({ onCopy, onSavePrompt }) {
     ideas: "",
     image: "",
   });
+
+  useEffect(() => {
+    function restoreYoutubePreset() {
+      const savedPreset = readYoutubePreset();
+      setYoutubePreset(savedPreset);
+      setYoutubeForm(getYoutubeFormDefaults(savedPreset));
+      setYoutubePresetMessage(
+        savedPreset ? "โหลดค่าจากคลาวด์แล้ว" : "ไม่มีค่า YouTube preset บนคลาวด์"
+      );
+    }
+
+    window.addEventListener("mixtoole-sync-restored", restoreYoutubePreset);
+    return () =>
+      window.removeEventListener("mixtoole-sync-restored", restoreYoutubePreset);
+  }, [setYoutubePreset]);
 
   async function generate(tool, payload) {
     setError("");
@@ -613,6 +628,17 @@ function getYoutubeFormDefaults(savedPreset) {
   }
 
   return { ...defaultYoutubeForm, ...savedPreset };
+}
+
+function readYoutubePreset() {
+  try {
+    const stored = window.localStorage.getItem(
+      "mixtoole-youtube-description-preset-v1"
+    );
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
 }
 
 const toolLabels = {
