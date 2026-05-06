@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 
-const STORE_NAME = "mix-image-tool";
+const STORE_NAME = "workspace-data";
 const WORKSPACE_KEY = "workspace";
 
 export async function handler(event) {
