@@ -30,7 +30,8 @@ const defaultSunoForm = {
   avoid:
     "คำซ้ำซากแบบ AI, ประโยคสวยแต่ไม่เจ็บจริง, การบอกอารมณ์ตรง ๆ เกินไป",
   complexity: "ซับซ้อนแบบโปร",
-  genre: "Thai pop, alt R&B, cinematic ballad",
+  genre:
+    "cinematic Thai rap, orchestral hip hop, dark grand piano, live drums, deep 808, Thai flute",
   hook: "ประโยคฮุกที่จำง่าย แต่ไม่เชย",
   language: "ไทย",
   mood: "คิดถึงแบบเก็บไว้ เศร้าแต่ยังมีศักดิ์ศรี อบอุ่นปนเจ็บ",
@@ -242,7 +243,7 @@ function AITools({ onCopy, onSavePrompt }) {
               onGenerate={() =>
                 generate("suno", {
                   ...sunoForm,
-                  maxOutputTokens: 2800,
+                  maxOutputTokens: 4300,
                 })
               }
             />
@@ -410,7 +411,7 @@ function SunoSongTool({ form, loading, onChange, onGenerate }) {
           แต่งเพลงสำหรับ Suno 5.5 Pro
         </p>
         <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-          เน้นเนื้อเพลงที่มีชั้นอารมณ์ มีภาพจำ มี dynamic และไม่เขียนเหมือน AI
+          ออกผลลัพธ์แบบไฟล์ Suno เต็มรูปแบบ: styles, exclude styles, lyrics พร้อม timestamp และ cue ใน []
         </p>
       </div>
 

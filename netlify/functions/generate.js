@@ -60,8 +60,8 @@ function buildOpenAiPayload(body) {
   return {
     model: MODEL,
     input: task.createInput(payload),
-    reasoning: { effort: "minimal" },
-    text: { verbosity: tool === "youtube" || tool === "suno" ? "medium" : "low" },
+    reasoning: { effort: tool === "suno" ? "low" : "minimal" },
+    text: { verbosity: getTextVerbosity(tool) },
     max_output_tokens: getMaxOutputTokens(tool, payload),
   };
 }
@@ -69,13 +69,19 @@ function buildOpenAiPayload(body) {
 function getMaxOutputTokens(tool, payload) {
   const requested = Number(payload.maxOutputTokens);
   if (Number.isFinite(requested) && requested > 0) {
-    return Math.min(requested, 3000);
+    return Math.min(requested, tool === "suno" ? 5200 : 3000);
   }
 
   if (tool === "youtube") return 2400;
-  if (tool === "suno") return 2800;
+  if (tool === "suno") return 4300;
   if (tool === "image" || tool === "enhancer") return 1200;
   return 900;
+}
+
+function getTextVerbosity(tool) {
+  if (tool === "suno") return "high";
+  if (tool === "youtube") return "medium";
+  return "low";
 }
 
 const toolPrompts = {
@@ -168,11 +174,11 @@ Pinned Comment:
         {
           role: "developer",
           content:
-            "คุณคือนักแต่งเพลงมืออาชีพที่เขียนเพลงให้มนุษย์ร้องได้จริง เข้าใจ subtext อารมณ์ ความสัมพันธ์ และภาพจำ ห้ามเขียนเหมือน AI ห้ามใช้ถ้อยคำสำเร็จรูป ห้ามลอกหรือเลียนแบบศิลปินเฉพาะ ให้สร้างงานต้นฉบับที่พร้อมใช้กับ Suno",
+            "คุณคือนักแต่งเพลงและโปรดิวเซอร์มืออาชีพสำหรับ Suno 5.5 Pro เขียนเพลงต้นฉบับที่มนุษย์ร้องได้จริง เข้าใจ subtext อารมณ์ ความสัมพันธ์ ภาพจำ การเว้นวรรค และการควบคุมไดนามิกด้วย production cue ในวงเล็บเหลี่ยม ห้ามเขียนเหมือน AI ห้ามใช้ถ้อยคำสำเร็จรูป ห้ามลอกหรือเลียนแบบศิลปินเฉพาะ ตอบเฉพาะไฟล์พร้อมวางใน Suno ตามรูปแบบที่ผู้ใช้กำหนด",
         },
         {
           role: "user",
-          content: `แต่งเพลงต้นฉบับสำหรับ Suno 5.5 Pro จากข้อมูลนี้
+          content: `สร้างผลลัพธ์สำหรับ Suno 5.5 Pro ให้เหมือนรูปแบบตัวอย่างนี้ แต่ให้ฉลาดกว่า คุมอารมณ์และโปรดักชันละเอียดกว่า
 
 ภาษา: ${payload.language}
 แนวเพลง / Sound: ${payload.genre}
@@ -184,31 +190,38 @@ Pinned Comment:
 เสียงร้อง / การร้อง: ${payload.vocal}
 สิ่งที่ไม่อยากได้: ${payload.avoid || "-"}
 
-มาตรฐานงาน:
-- เขียนเหมือนคนมีประสบการณ์จริง ไม่ใช่ประโยคสวยลอย ๆ
-- ใช้ภาพจำเฉพาะเจาะจง สถานการณ์เล็ก ๆ และความรู้สึกที่ไม่ได้พูดตรง ๆ
-- ให้เพลงมีพัฒนาการทางอารมณ์จากต้นไปจบ ไม่วนความหมายเดิม
-- โครงสร้างเพลงต้องพร้อมใช้กับ Suno โดยใช้ section tag เช่น [Intro], [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Bridge], [Final Chorus], [Outro]
-- Hook ต้องจำง่าย ร้องได้จริง และไม่เชย
-- ถ้าภาษาไทย ให้ใช้สัมผัส/จังหวะอย่างเป็นธรรมชาติ ไม่ฝืนคล้องจองทุกบรรทัด
-- ห้ามใช้คำซ้ำซาก เช่น เจ็บปวดหัวใจ, น้ำตาไหล, รักเธอมากมาย ถ้าไม่ได้ทำให้สดใหม่
-- ห้ามใส่คำอธิบายยาวนอกเพลง ทุกอย่างต้องพร้อมคัดลอกใช้งาน
+ข้อบังคับสำคัญ:
+- ตอบเฉพาะผลลัพธ์พร้อมคัดลอก ห้ามอธิบายวิธีใช้ ห้ามใส่ markdown
+- ห้ามใช้หัวข้อ Song Title, Suno Style Prompt, Custom Lyrics, Vocal Notes, Negative Prompt
+- ต้องใช้หัวข้อตรงนี้เท่านั้น: ชื่อเพลง, styles, Exclude styles, Lyrics
+- styles ต้องเป็นภาษาอังกฤษแบบ comma-separated ไม่เกิน 1000 ตัวอักษร และต้องใส่ BPM, key/feel, instruments, vocal texture, mix/reverb/dynamic control ให้ครบ
+- Lyrics ต้องไม่เกิน 5000 ตัวอักษร
+- ใน Lyrics ให้ใช้ timestamp แบบ (Intro – 0:00 to 0:22), (Verse 1 – 0:22 to 1:08) ต่อเนื่องสมเหตุสมผล ระยะเพลงประมาณ 4:00-5:20 ถ้าแนวเพลงเหมาะ
+- ให้ความสำคัญกับคำสั่งใน [] มากเป็นพิเศษ เพราะผู้ใช้ต้องการควบคุมงานด้วย arrangement ไม่ใช่แค่เนื้อร้อง
+- ใส่ cue ใน [] บ่อยและฉลาด เช่น เครื่องดนตรี, vocal delivery, harmony, riser, silence cut, drum fill, choir, sub drop, reverb, room tone, breathing, section transition
+- เนื้อร้องต้องมีภาพจำเฉพาะ มีความหมายซ่อน มีพัฒนาการทางอารมณ์ ไม่วนคำเดิม และไม่พูดอารมณ์ตรงเกินไป
+- Hook ต้องจำง่าย ร้องได้จริง และกลับมาแบบเปลี่ยนความหมายในช่วงท้าย
+- ถ้าภาษาไทย ให้สัมผัสเป็นธรรมชาติ เหมือนคนแต่งเพลงจริง ไม่ฝืนคล้องจองทุกบรรทัด
+- หลีกเลี่ยงคำซ้ำซากตามสิ่งที่ไม่อยากได้
+- Exclude styles ต้องใส่ Weirdness% และ Style Influence% ตามตัวอย่าง และเพิ่มคำเลี่ยงที่เกี่ยวกับสิ่งที่ไม่อยากได้ได้อีกเล็กน้อย
 
-จัดรูปแบบเป็น:
-Song Title:
+รูปแบบที่ต้องตอบ:
+ชื่อเพลง............
+
+
+styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง
 ...
 
-Suno Style Prompt:
+Exclude styles:
+Weirdness%
+Style Influence%
 ...
 
-Custom Lyrics:
+Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ [] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง
+(Intro – 0:00 to 0:22)
+[...]
 ...
-
-Vocal / Arrangement Notes:
-...
-
-Negative Prompt:
-...`,
+[End]`,
         },
       ];
     },
