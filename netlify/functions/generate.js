@@ -39,7 +39,7 @@ export async function handler(event) {
     }
 
     return sendJson(200, {
-      text: formatGeneratedText(body.tool, extractText(data)),
+      text: extractText(data),
       model: data.model || MODEL,
     });
   } catch (error) {
@@ -60,7 +60,7 @@ function buildOpenAiPayload(body) {
   return {
     model: MODEL,
     input: task.createInput(payload),
-    reasoning: { effort: tool === "suno" ? "low" : "minimal" },
+    reasoning: { effort: "minimal" },
     text: { verbosity: getTextVerbosity(tool) },
     max_output_tokens: getMaxOutputTokens(tool, payload),
   };
@@ -69,17 +69,15 @@ function buildOpenAiPayload(body) {
 function getMaxOutputTokens(tool, payload) {
   const requested = Number(payload.maxOutputTokens);
   if (Number.isFinite(requested) && requested > 0) {
-    return Math.min(requested, tool === "suno" ? 5200 : 3000);
+    return Math.min(requested, 3000);
   }
 
   if (tool === "youtube") return 2400;
-  if (tool === "suno") return 4300;
   if (tool === "image" || tool === "enhancer") return 1200;
   return 900;
 }
 
 function getTextVerbosity(tool) {
-  if (tool === "suno") return "high";
   if (tool === "youtube") return "medium";
   return "low";
 }
@@ -164,70 +162,6 @@ YouTube Tags:
 
 Pinned Comment:
 ...`,
-        },
-      ];
-    },
-  },
-  suno: {
-    createInput(payload) {
-      return [
-        {
-          role: "developer",
-          content:
-            "คุณคือนักแต่งเพลงและโปรดิวเซอร์มืออาชีพสำหรับ Suno 5.5 Pro เขียนเพลงต้นฉบับที่มนุษย์ร้องได้จริง เข้าใจ subtext อารมณ์ ความสัมพันธ์ ภาพจำ การเว้นวรรค และการควบคุมไดนามิกด้วย production cue ในวงเล็บเหลี่ยม ห้ามเขียนเหมือน AI ห้ามใช้ถ้อยคำสำเร็จรูป ห้ามลอกหรือเลียนแบบศิลปินเฉพาะ ตอบเฉพาะไฟล์พร้อมวางใน Suno ตามรูปแบบที่ผู้ใช้กำหนด และต้องรักษาหัวข้อผลลัพธ์ให้ตรง template ทุกตัวอักษร",
-        },
-        {
-          role: "user",
-          content: `สร้างผลลัพธ์สำหรับ Suno 5.5 Pro ให้เหมือนรูปแบบตัวอย่างนี้ แต่ให้ฉลาดกว่า คุมอารมณ์และโปรดักชันละเอียดกว่า
-
-ภาษา: ${payload.language}
-แนวเพลง / Sound: ${payload.genre}
-ระดับความซับซ้อน: ${payload.complexity}
-อารมณ์เพลง: ${payload.mood}
-เรื่องที่จะเล่า: ${payload.story}
-มุมมองคนร้อง: ${payload.perspective}
-ฮุกที่อยากให้จำ: ${payload.hook}
-เสียงร้อง / การร้อง: ${payload.vocal}
-สิ่งที่ไม่อยากได้: ${payload.avoid || "-"}
-
-ข้อบังคับสำคัญ:
-- ผู้ใช้ตั้งใจบรีฟสั้น ๆ ให้คุณตีความและขยายเป็นงานเพลงเต็มคุณภาพสูงเอง โดยยึดตัวเลือกแนวเพลง/อารมณ์/ฮุก/เสียงร้องเป็นเข็มทิศ
-- ตอบเฉพาะผลลัพธ์พร้อมคัดลอก ห้ามอธิบายวิธีใช้ ห้ามใส่ markdown
-- ห้ามใช้หัวข้อ Song Title, Suno Style Prompt, Custom Lyrics, Vocal Notes, Negative Prompt
-- ต้องใช้หัวข้อตรงนี้เท่านั้น: ชื่อเพลง, styles, Exclude styles, Lyrics
-- ห้ามเปลี่ยนหัวข้อ ห้ามย่อหัวข้อ ห้ามใส่ colon เองในบรรทัดชื่อเพลง
-- บรรทัดหัวข้อต้องพิมพ์ตาม template ด้านล่างทุกตัวอักษร โดยเฉพาะ "ชื่อเพลง............" และ "styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง"
-- styles ต้องเป็นภาษาอังกฤษแบบ comma-separated ไม่เกิน 1000 ตัวอักษร และต้องใส่ BPM, key/feel, instruments, vocal texture, mix/reverb/dynamic control ให้ครบ
-- Lyrics ต้องไม่เกิน 5000 ตัวอักษร
-- ถ้าภาษาเป็น "ไทย" เนื้อร้องจริงนอกวงเล็บ [] ต้องเป็นภาษาไทยเท่านั้น ห้ามแต่งเนื้อร้องภาษาอังกฤษ ยกเว้น ad-lib สั้น ๆ ถ้าจำเป็น
-- คำสั่งโปรดักชันใน [] ใช้ภาษาอังกฤษหรือไทยได้ แต่ต้องชัดเจนสำหรับ Suno และต้องไม่กลืนเนื้อร้อง
-- ใน Lyrics ให้ใช้ timestamp แบบ (Intro – 0:00 to 0:22), (Verse 1 – 0:22 to 1:08) ต่อเนื่องสมเหตุสมผล ระยะเพลงประมาณ 4:00-5:20 ถ้าแนวเพลงเหมาะ
-- ให้ความสำคัญกับคำสั่งใน [] มากเป็นพิเศษ เพราะผู้ใช้ต้องการควบคุมงานด้วย arrangement ไม่ใช่แค่เนื้อร้อง
-- ใส่ cue ใน [] บ่อยและฉลาด เช่น เครื่องดนตรี, vocal delivery, harmony, riser, silence cut, drum fill, choir, sub drop, reverb, room tone, breathing, section transition
-- เนื้อร้องต้องมีภาพจำเฉพาะ มีความหมายซ่อน มีพัฒนาการทางอารมณ์ ไม่วนคำเดิม และไม่พูดอารมณ์ตรงเกินไป
-- Hook ต้องจำง่าย ร้องได้จริง และกลับมาแบบเปลี่ยนความหมายในช่วงท้าย
-- ถ้าภาษาไทย ให้สัมผัสเป็นธรรมชาติ เหมือนคนแต่งเพลงจริง ไม่ฝืนคล้องจองทุกบรรทัด
-- หลีกเลี่ยงคำซ้ำซากตามสิ่งที่ไม่อยากได้
-- Exclude styles ต้องใส่ Weirdness% และ Style Influence% ตามตัวอย่าง และเพิ่มคำเลี่ยงที่เกี่ยวกับสิ่งที่ไม่อยากได้ได้อีกเล็กน้อย
-
-รูปแบบที่ต้องตอบ:
-ชื่อเพลง............
-<ชื่อเพลงสั้น จำง่าย ไม่เชย>
-
-
-styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง
-...
-
-Exclude styles:
-Weirdness%
-Style Influence%
-...
-
-Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ [] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง
-(Intro – 0:00 to 0:22)
-[...]
-...
-[End]`,
         },
       ];
     },
@@ -325,36 +259,6 @@ function extractText(data) {
     .map((content) => content.text || "")
     .join("")
     .trim();
-}
-
-function formatGeneratedText(tool, text) {
-  if (tool !== "suno") return text;
-  return formatSunoText(text);
-}
-
-function formatSunoText(text) {
-  return text
-    .trim()
-    .replace(/^ชื่อเพลง\s*:\s*(.+)$/im, "ชื่อเพลง............\n$1")
-    .replace(
-      /^styles:\s*(?!ไม่เกิน1000)(.+)$/im,
-      "styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง\n$1"
-    )
-    .replace(
-      /(styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง)\n\s*ไม่เกิน1000[^\n]*\n/im,
-      "$1\n"
-    )
-    .replace(/^exclude styles\s*:/im, "Exclude styles:")
-    .replace(/^Weirdness%.*$/im, "Weirdness%")
-    .replace(/^Style Influence%.*$/im, "Style Influence%")
-    .replace(/^lyrics:\s*(?!ไม่เกิน5000)(.*)$/im, (_, rest) => {
-      const suffix = rest.trim() ? `\n${rest.trim()}` : "";
-      return `Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ [] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง${suffix}`;
-    })
-    .replace(
-      /(Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ \[\] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง)\n\s*ไม่เกิน5000[^\n]*\n/im,
-      "$1\n"
-    );
 }
 
 function sendJson(statusCode, data) {

@@ -5,7 +5,6 @@ import {
   Image,
   ImagePlus,
   Lightbulb,
-  Music2,
   Save,
   Send,
   Trash2,
@@ -26,128 +25,8 @@ const defaultYoutubeForm = {
   title: "ชื่อคลิปหรือชื่อเพลง",
 };
 
-const defaultSunoForm = {
-  avoid:
-    "คำซ้ำซากแบบ AI, ประโยคสวยแต่ไม่เจ็บจริง, การบอกอารมณ์ตรง ๆ เกินไป",
-  complexity: "ซับซ้อนแบบโปร",
-  genreSelections: [
-    "cinematic Thai rap",
-    "orchestral hip hop",
-    "dark piano ballad",
-  ],
-  hook: "ฮุกสั้น จำง่าย มีสองชั้นความหมาย",
-  language: "ไทย",
-  moodSelections: [
-    "มั่นใจนิ่ง ๆ หลังโดนดูถูก",
-    "เจ็บแต่ไม่ฟูมฟาย",
-    "อบอุ่นปนมืด",
-  ],
-  perspective: "คนสร้างงานที่ไม่อยากเถียง",
-  story:
-    "คนทำเพลงด้วยเครื่องมือ AI แต่ใช้หูและใจควบคุมทุกชั้นเสียง ให้ผลงานพูดแทนปาก",
-  vocal: "calm male close mic, warm breath, controlled power chorus",
-};
-
-const sunoGenreOptions = [
-  "cinematic Thai rap",
-  "orchestral hip hop",
-  "dark piano ballad",
-  "Thai pop ballad",
-  "alt R&B",
-  "trap soul",
-  "R&B slow jam",
-  "lo-fi pop",
-  "city pop",
-  "indie pop rock",
-  "synthwave",
-  "EDM pop",
-  "dream pop",
-  "rock ballad",
-  "drill / trap",
-  "acoustic folk",
-  "jazz soul",
-  "funk pop",
-  "anime opening",
-  "ลูกทุ่งอินดี้",
-  "หมอลำ fusion",
-  "เพื่อชีวิต modern",
-  "orchestral cinematic",
-  "Thai flute fusion",
-  "dark grand piano",
-  "deep 808 sub",
-  "live drum kit",
-  "choir pads",
-];
-
-const sunoMoodOptions = [
-  "มั่นใจนิ่ง ๆ หลังโดนดูถูก",
-  "เจ็บแต่ไม่ฟูมฟาย",
-  "คิดถึงแบบเก็บไว้",
-  "อบอุ่นปนมืด",
-  "โกรธแบบคุมเสียง",
-  "เหงาในเมืองใหญ่",
-  "รักที่พูดไม่ได้",
-  "ผิดหวังแต่ยังมีศักดิ์ศรี",
-  "ชนะโดยไม่ต้องตะโกน",
-  "ลึกแต่ไม่ดราม่าเกิน",
-  "ลึกลับ cinematic",
-  "หวังเล็ก ๆ หลังพัง",
-  "ประชดนิ่ง ๆ",
-  "ทะเยอทะยานแบบคนทำงาน",
-  "ปล่อยวางแต่ยังเจ็บ",
-  "โรแมนติกแบบผู้ใหญ่",
-  "ดิบ จริง ไม่ประดิษฐ์",
-  "มืดแต่แพง",
-  "คิดถึงบ้าน / รากเหง้า",
-  "พลังใจแบบไม่ขายฝัน",
-];
-
-const sunoHookOptions = [
-  "ฮุกสั้น จำง่าย มีสองชั้นความหมาย",
-  "ฮุกวนซ้ำแบบติดหูมาก",
-  "ฮุกตะโกนได้ในคอนเสิร์ต",
-  "ฮุกกระซิบแต่เจ็บ",
-  "ฮุกเป็นคำถาม",
-  "ฮุกประชดนิ่ง ๆ",
-  "ฮุกบอกลาโดยไม่พูดว่าลา",
-  "ฮุก cinematic เล่นใหญ่",
-  "ฮุก rap chant จำง่าย",
-  "ฮุกเปลี่ยนความหมายตอนท้ายเพลง",
-  "ฮุกแบบประโยคเดียวแทงใจ",
-  "ฮุกภาษาไทยปนอังกฤษนิด ๆ",
-];
-
-const sunoVocalOptions = [
-  "calm male close mic, warm breath, controlled power chorus",
-  "warm male vocal with soft rasp and intimate doubles",
-  "breathy female vocal, fragile verse, wide chorus",
-  "powerful female belt with soft harmony stack",
-  "male/female duet call and response",
-  "smooth R&B falsetto with airy ad-libs",
-  "spoken rap calm pocket with natural breath",
-  "low baritone narrative vocal",
-  "youthful pop vocal, clean and bright",
-  "raspy rock vocal, emotional but controlled",
-  "choir-backed hook with dry lead vocal",
-  "whisper intimate vocal with cinematic lift",
-];
-
-const sunoPerspectiveOptions = [
-  "คนสร้างงานที่ไม่อยากเถียง",
-  "คนที่ยังรัก แต่ต้องทำเหมือนไม่รู้สึกอะไรแล้ว",
-  "คนถูกทิ้งที่ไม่ขอร้อง",
-  "คนผิดที่พูดขอโทษไม่เก่ง",
-  "คนรอที่เริ่มรู้ว่าควรไป",
-  "คนชนะที่ไม่ได้อยากทำร้ายใคร",
-  "คนธรรมดาที่อยากพิสูจน์ด้วยงาน",
-  "คนที่กลับบ้านแล้วไม่เหมือนเดิม",
-  "คนที่รักเงียบ ๆ จากไกล ๆ",
-  "คนที่ปล่อยมือ แต่ยังจำรายละเอียดได้หมด",
-];
-
 const toolTabs = [
   { id: "youtube", label: "YouTube Description", icon: Youtube },
-  { id: "suno", label: "Suno Songwriter", icon: Music2 },
   { id: "caption", label: "สร้างแคปชัน", icon: Captions },
   { id: "enhancer", label: "ปรับพรอมป์", icon: WandSparkles },
   { id: "ideas", label: "สุ่มไอเดีย", icon: Lightbulb },
@@ -158,10 +37,6 @@ const toolModeBadges = {
   default: {
     className: "bg-emerald-100/70 text-emerald-700",
     label: "โหมดประหยัด: จีพีทีไฟว์มินิ",
-  },
-  suno: {
-    className: "bg-indigo-100/75 text-indigo-700",
-    label: "โหมดเพลง: โปรดักชันละเอียด + เนื้อร้องลึก",
   },
   youtube: {
     className: "bg-sky-100/75 text-sky-700",
@@ -182,7 +57,6 @@ function AITools({ onCopy, onSavePrompt }) {
   const [youtubeForm, setYoutubeForm] = useState(() =>
     getYoutubeFormDefaults(youtubePreset)
   );
-  const [sunoForm, setSunoForm] = useState(defaultSunoForm);
   const [captionForm, setCaptionForm] = useState({
     platform: "อินสตาแกรม",
     tone: "เป็นกันเอง",
@@ -203,7 +77,6 @@ function AITools({ onCopy, onSavePrompt }) {
   });
   const [outputs, setOutputs] = useState({
     youtube: "",
-    suno: "",
     caption: "",
     enhancer: "",
     ideas: "",
@@ -352,20 +225,6 @@ function AITools({ onCopy, onSavePrompt }) {
                 })
               }
               onSavePreset={saveYoutubePreset}
-            />
-          )}
-
-          {activeTool === "suno" && (
-            <SunoSongTool
-              form={sunoForm}
-              loading={loadingTool === "suno"}
-              onChange={setSunoForm}
-              onGenerate={() =>
-                generate("suno", {
-                  ...buildSunoPayload(sunoForm),
-                  maxOutputTokens: 4300,
-                })
-              }
             />
           )}
 
@@ -518,112 +377,6 @@ function YoutubeDescriptionTool({
         onClick={onGenerate}
       >
         สร้างคำอธิบาย YouTube
-      </GenerateButton>
-    </div>
-  );
-}
-
-function SunoSongTool({ form, loading, onChange, onGenerate }) {
-  const genreSelections = Array.isArray(form.genreSelections)
-    ? form.genreSelections
-    : [];
-  const moodSelections = Array.isArray(form.moodSelections)
-    ? form.moodSelections
-    : [];
-  const genreCount = genreSelections.length;
-  const moodCount = moodSelections.length;
-
-  return (
-    <div className="grid gap-3">
-      <div className="rounded-[22px] border border-white/70 bg-white/45 p-3 shadow-sm">
-        <p className="text-sm font-semibold text-slate-900">
-          แต่งเพลงสำหรับ Suno 5.5 Pro
-        </p>
-        <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-          ใส่บรีฟสั้น ๆ แล้วเลือกโทนงาน ระบบจะจัด styles, exclude styles และ lyrics พร้อม timestamp ให้อัตโนมัติ
-        </p>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2">
-        <SelectField
-          label="ภาษา"
-          value={form.language}
-          onChange={(language) => onChange({ ...form, language })}
-          options={["ไทย", "อังกฤษ", "ไทยปนอังกฤษ", "ญี่ปุ่น", "เกาหลี"]}
-        />
-        <SelectField
-          label="ระดับความซับซ้อน"
-          value={form.complexity}
-          onChange={(complexity) => onChange({ ...form, complexity })}
-          options={[
-            "ฟังง่ายติดหู",
-            "ซับซ้อนแบบโปร",
-            "ดราม่าหนัก",
-            "กวีแต่ยังร้องได้",
-            "เชิงทดลอง / Art pop",
-          ]}
-        />
-      </div>
-
-      <TextAreaField
-        label="บรีฟสั้น ๆ"
-        onChange={(story) => onChange({ ...form, story })}
-        placeholder="พิมพ์สั้น ๆ ว่าเพลงนี้เกี่ยวกับอะไร ใครรู้สึกอะไร หรืออยากให้เพลงตอบโต้เรื่องอะไร"
-        value={form.story}
-      />
-
-      <MultiChoiceField
-        label={`แนวเพลง / Sound (${genreCount}/4)`}
-        max={4}
-        onChange={(genreSelections) => onChange({ ...form, genreSelections })}
-        options={sunoGenreOptions}
-        value={genreSelections}
-      />
-
-      <MultiChoiceField
-        label={`อารมณ์เพลง (${moodCount}/4)`}
-        max={4}
-        onChange={(moodSelections) => onChange({ ...form, moodSelections })}
-        options={sunoMoodOptions}
-        value={moodSelections}
-      />
-
-      <ChoiceField
-        label="มุมมองคนร้อง"
-        onChange={(perspective) => onChange({ ...form, perspective })}
-        options={sunoPerspectiveOptions}
-        value={form.perspective}
-      />
-
-      <ChoiceField
-        label="ฮุกที่อยากให้จำ"
-        onChange={(hook) => onChange({ ...form, hook })}
-        options={sunoHookOptions}
-        value={form.hook}
-      />
-
-      <ChoiceField
-        label="เสียงร้อง / การร้อง"
-        onChange={(vocal) => onChange({ ...form, vocal })}
-        options={sunoVocalOptions}
-        value={form.vocal}
-      />
-
-      <TextInputField
-        label="สิ่งที่ไม่อยากได้ (ไม่จำเป็น)"
-        onChange={(avoid) => onChange({ ...form, avoid })}
-        placeholder="เช่น ห้ามคำเชย ห้ามคำว่า น้ำตา ห้ามเสียงหุ่นยนต์"
-        value={form.avoid}
-      />
-
-      <GenerateButton
-        disabled={
-          !form.story.trim() || genreCount === 0 || moodCount === 0
-        }
-        loading={loading}
-        onClick={onGenerate}
-      >
-        แต่งเพลงสำหรับ Suno
       </GenerateButton>
     </div>
   );
@@ -790,85 +543,6 @@ function ToolPanel({ children, title }) {
   );
 }
 
-function MultiChoiceField({ label, max = 4, onChange, options, value }) {
-  const selected = Array.isArray(value) ? value : [];
-
-  function toggle(option) {
-    if (selected.includes(option)) {
-      onChange(selected.filter((item) => item !== option));
-      return;
-    }
-
-    if (selected.length >= max) return;
-    onChange([...selected, option]);
-  }
-
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-sm font-semibold text-slate-600">{label}</span>
-        <span className="rounded-full bg-white/60 px-2.5 py-1 text-[11px] font-semibold text-slate-400">
-          เลือกได้ไม่เกิน {max}
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {options.map((option) => {
-          const active = selected.includes(option);
-          const locked = !active && selected.length >= max;
-
-          return (
-            <button
-              className={`min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold transition duration-150 hover:-translate-y-0.5 ${
-                active
-                  ? "bg-slate-900 text-white shadow-soft"
-                  : locked
-                    ? "bg-white/35 text-slate-300"
-                    : "bg-white/65 text-slate-600 shadow-sm hover:bg-white"
-              }`}
-              disabled={locked}
-              key={option}
-              onClick={() => toggle(option)}
-              type="button"
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ChoiceField({ label, onChange, options, value }) {
-  return (
-    <div>
-      <span className="mb-2 block text-sm font-semibold text-slate-600">
-        {label}
-      </span>
-      <div className="flex flex-wrap gap-2">
-        {options.map((option) => {
-          const active = value === option;
-
-          return (
-            <button
-              className={`min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold transition duration-150 hover:-translate-y-0.5 ${
-                active
-                  ? "bg-slate-900 text-white shadow-soft"
-                  : "bg-white/65 text-slate-600 shadow-sm hover:bg-white"
-              }`}
-              key={option}
-              onClick={() => onChange(option)}
-              type="button"
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 function SelectField({ label, onChange, options, value }) {
   return (
     <label className="block">
@@ -979,24 +653,8 @@ function readYoutubePreset() {
   }
 }
 
-function buildSunoPayload(form) {
-  const genreSelections = Array.isArray(form.genreSelections)
-    ? form.genreSelections
-    : [];
-  const moodSelections = Array.isArray(form.moodSelections)
-    ? form.moodSelections
-    : [];
-
-  return {
-    ...form,
-    genre: genreSelections.join(", "),
-    mood: moodSelections.join(", "),
-  };
-}
-
 const toolLabels = {
   youtube: "YouTube Description",
-  suno: "Suno Songwriter",
   caption: "สร้างแคปชัน",
   enhancer: "ปรับพรอมป์",
   ideas: "สุ่มไอเดีย",
@@ -1008,11 +666,6 @@ const saveMeta = {
     title: "คำอธิบาย YouTube",
     tags: ["YouTube", "คำอธิบาย", "เอไอ"],
     previewStyle: "rose-sky",
-  },
-  suno: {
-    title: "เพลงสำหรับ Suno",
-    tags: ["Suno", "เพลง", "เนื้อเพลง"],
-    previewStyle: "violet-fog",
   },
   caption: {
     title: "ผลลัพธ์แคปชัน",
