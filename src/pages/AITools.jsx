@@ -30,16 +30,120 @@ const defaultSunoForm = {
   avoid:
     "คำซ้ำซากแบบ AI, ประโยคสวยแต่ไม่เจ็บจริง, การบอกอารมณ์ตรง ๆ เกินไป",
   complexity: "ซับซ้อนแบบโปร",
-  genre:
-    "cinematic Thai rap, orchestral hip hop, dark grand piano, live drums, deep 808, Thai flute",
-  hook: "ประโยคฮุกที่จำง่าย แต่ไม่เชย",
+  genreSelections: [
+    "cinematic Thai rap",
+    "orchestral hip hop",
+    "dark piano ballad",
+  ],
+  hook: "ฮุกสั้น จำง่าย มีสองชั้นความหมาย",
   language: "ไทย",
-  mood: "คิดถึงแบบเก็บไว้ เศร้าแต่ยังมีศักดิ์ศรี อบอุ่นปนเจ็บ",
-  perspective: "คนที่ยังรัก แต่ต้องทำเหมือนไม่รู้สึกอะไรแล้ว",
+  moodSelections: [
+    "มั่นใจนิ่ง ๆ หลังโดนดูถูก",
+    "เจ็บแต่ไม่ฟูมฟาย",
+    "อบอุ่นปนมืด",
+  ],
+  perspective: "คนสร้างงานที่ไม่อยากเถียง",
   story:
-    "เล่าเรื่องคนสองคนที่เดินผ่านที่เดิม แต่ไม่มีสิทธิ์ทักกันเหมือนเดิม ใช้ภาพจำเล็ก ๆ ให้คนฟังรู้สึกเอง",
-  vocal: "เสียงร้องอบอุ่น มีรอยแตกเล็กน้อย ช่วงฮุกเปิดกว้างและติดหู",
+    "คนทำเพลงด้วยเครื่องมือ AI แต่ใช้หูและใจควบคุมทุกชั้นเสียง ให้ผลงานพูดแทนปาก",
+  vocal: "calm male close mic, warm breath, controlled power chorus",
 };
+
+const sunoGenreOptions = [
+  "cinematic Thai rap",
+  "orchestral hip hop",
+  "dark piano ballad",
+  "Thai pop ballad",
+  "alt R&B",
+  "trap soul",
+  "R&B slow jam",
+  "lo-fi pop",
+  "city pop",
+  "indie pop rock",
+  "synthwave",
+  "EDM pop",
+  "dream pop",
+  "rock ballad",
+  "drill / trap",
+  "acoustic folk",
+  "jazz soul",
+  "funk pop",
+  "anime opening",
+  "ลูกทุ่งอินดี้",
+  "หมอลำ fusion",
+  "เพื่อชีวิต modern",
+  "orchestral cinematic",
+  "Thai flute fusion",
+  "dark grand piano",
+  "deep 808 sub",
+  "live drum kit",
+  "choir pads",
+];
+
+const sunoMoodOptions = [
+  "มั่นใจนิ่ง ๆ หลังโดนดูถูก",
+  "เจ็บแต่ไม่ฟูมฟาย",
+  "คิดถึงแบบเก็บไว้",
+  "อบอุ่นปนมืด",
+  "โกรธแบบคุมเสียง",
+  "เหงาในเมืองใหญ่",
+  "รักที่พูดไม่ได้",
+  "ผิดหวังแต่ยังมีศักดิ์ศรี",
+  "ชนะโดยไม่ต้องตะโกน",
+  "ลึกแต่ไม่ดราม่าเกิน",
+  "ลึกลับ cinematic",
+  "หวังเล็ก ๆ หลังพัง",
+  "ประชดนิ่ง ๆ",
+  "ทะเยอทะยานแบบคนทำงาน",
+  "ปล่อยวางแต่ยังเจ็บ",
+  "โรแมนติกแบบผู้ใหญ่",
+  "ดิบ จริง ไม่ประดิษฐ์",
+  "มืดแต่แพง",
+  "คิดถึงบ้าน / รากเหง้า",
+  "พลังใจแบบไม่ขายฝัน",
+];
+
+const sunoHookOptions = [
+  "ฮุกสั้น จำง่าย มีสองชั้นความหมาย",
+  "ฮุกวนซ้ำแบบติดหูมาก",
+  "ฮุกตะโกนได้ในคอนเสิร์ต",
+  "ฮุกกระซิบแต่เจ็บ",
+  "ฮุกเป็นคำถาม",
+  "ฮุกประชดนิ่ง ๆ",
+  "ฮุกบอกลาโดยไม่พูดว่าลา",
+  "ฮุก cinematic เล่นใหญ่",
+  "ฮุก rap chant จำง่าย",
+  "ฮุกเปลี่ยนความหมายตอนท้ายเพลง",
+  "ฮุกแบบประโยคเดียวแทงใจ",
+  "ฮุกภาษาไทยปนอังกฤษนิด ๆ",
+];
+
+const sunoVocalOptions = [
+  "calm male close mic, warm breath, controlled power chorus",
+  "warm male vocal with soft rasp and intimate doubles",
+  "breathy female vocal, fragile verse, wide chorus",
+  "powerful female belt with soft harmony stack",
+  "male/female duet call and response",
+  "smooth R&B falsetto with airy ad-libs",
+  "spoken rap calm pocket with natural breath",
+  "low baritone narrative vocal",
+  "youthful pop vocal, clean and bright",
+  "raspy rock vocal, emotional but controlled",
+  "choir-backed hook with dry lead vocal",
+  "whisper intimate vocal with cinematic lift",
+];
+
+const sunoPerspectiveOptions = [
+  "คนสร้างงานที่ไม่อยากเถียง",
+  "คนที่ยังรัก แต่ต้องทำเหมือนไม่รู้สึกอะไรแล้ว",
+  "คนถูกทิ้งที่ไม่ขอร้อง",
+  "คนผิดที่พูดขอโทษไม่เก่ง",
+  "คนรอที่เริ่มรู้ว่าควรไป",
+  "คนชนะที่ไม่ได้อยากทำร้ายใคร",
+  "คนธรรมดาที่อยากพิสูจน์ด้วยงาน",
+  "คนที่กลับบ้านแล้วไม่เหมือนเดิม",
+  "คนที่รักเงียบ ๆ จากไกล ๆ",
+  "คนที่ปล่อยมือ แต่ยังจำรายละเอียดได้หมด",
+];
 
 const toolTabs = [
   { id: "youtube", label: "YouTube Description", icon: Youtube },
@@ -242,7 +346,7 @@ function AITools({ onCopy, onSavePrompt }) {
               onChange={setSunoForm}
               onGenerate={() =>
                 generate("suno", {
-                  ...sunoForm,
+                  ...buildSunoPayload(sunoForm),
                   maxOutputTokens: 4300,
                 })
               }
@@ -404,6 +508,15 @@ function YoutubeDescriptionTool({
 }
 
 function SunoSongTool({ form, loading, onChange, onGenerate }) {
+  const genreSelections = Array.isArray(form.genreSelections)
+    ? form.genreSelections
+    : [];
+  const moodSelections = Array.isArray(form.moodSelections)
+    ? form.moodSelections
+    : [];
+  const genreCount = genreSelections.length;
+  const moodCount = moodSelections.length;
+
   return (
     <div className="grid gap-3">
       <div className="rounded-[22px] border border-white/70 bg-white/45 p-3 shadow-sm">
@@ -411,7 +524,7 @@ function SunoSongTool({ form, loading, onChange, onGenerate }) {
           แต่งเพลงสำหรับ Suno 5.5 Pro
         </p>
         <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
-          ออกผลลัพธ์แบบไฟล์ Suno เต็มรูปแบบ: styles, exclude styles, lyrics พร้อม timestamp และ cue ใน []
+          ใส่บรีฟสั้น ๆ แล้วเลือกโทนงาน ระบบจะจัด styles, exclude styles และ lyrics พร้อม timestamp ให้อัตโนมัติ
         </p>
       </div>
 
@@ -436,51 +549,61 @@ function SunoSongTool({ form, loading, onChange, onGenerate }) {
         />
       </div>
 
-      <TextInputField
-        label="แนวเพลง / Sound"
-        onChange={(genre) => onChange({ ...form, genre })}
-        placeholder="เช่น Thai pop, alt R&B, cinematic ballad, trap soul"
-        value={form.genre}
-      />
       <TextAreaField
-        label="อารมณ์เพลง"
-        onChange={(mood) => onChange({ ...form, mood })}
-        placeholder="บอกอารมณ์ให้ละเอียด เช่น เจ็บแบบนิ่ง ๆ, คิดถึงแต่ไม่อยากกลับไป"
-        value={form.mood}
-      />
-      <TextAreaField
-        label="เรื่องที่จะเล่า"
+        label="บรีฟสั้น ๆ"
         onChange={(story) => onChange({ ...form, story })}
-        placeholder="ใส่เรื่องจริง ภาพจำ ฉาก สถานที่ หรือเหตุการณ์ที่อยากให้กลายเป็นเพลง"
+        placeholder="พิมพ์สั้น ๆ ว่าเพลงนี้เกี่ยวกับอะไร ใครรู้สึกอะไร หรืออยากให้เพลงตอบโต้เรื่องอะไร"
         value={form.story}
       />
-      <TextInputField
+
+      <MultiChoiceField
+        label={`แนวเพลง / Sound (${genreCount}/4)`}
+        max={4}
+        onChange={(genreSelections) => onChange({ ...form, genreSelections })}
+        options={sunoGenreOptions}
+        value={genreSelections}
+      />
+
+      <MultiChoiceField
+        label={`อารมณ์เพลง (${moodCount}/4)`}
+        max={4}
+        onChange={(moodSelections) => onChange({ ...form, moodSelections })}
+        options={sunoMoodOptions}
+        value={moodSelections}
+      />
+
+      <ChoiceField
         label="มุมมองคนร้อง"
         onChange={(perspective) => onChange({ ...form, perspective })}
-        placeholder="เช่น คนถูกทิ้ง / คนที่ยังรอ / คนที่ทำผิดแต่พูดไม่ได้"
+        options={sunoPerspectiveOptions}
         value={form.perspective}
       />
-      <TextInputField
+
+      <ChoiceField
         label="ฮุกที่อยากให้จำ"
         onChange={(hook) => onChange({ ...form, hook })}
-        placeholder="ใส่คำหรือประโยคที่อยากให้เป็นแกนของเพลง"
+        options={sunoHookOptions}
         value={form.hook}
       />
-      <TextInputField
+
+      <ChoiceField
         label="เสียงร้อง / การร้อง"
         onChange={(vocal) => onChange({ ...form, vocal })}
-        placeholder="เช่น male vocal, breathy, warm, powerful chorus"
+        options={sunoVocalOptions}
         value={form.vocal}
       />
-      <TextAreaField
-        label="สิ่งที่ไม่อยากได้"
+
+      <TextInputField
+        label="สิ่งที่ไม่อยากได้ (ไม่จำเป็น)"
         onChange={(avoid) => onChange({ ...form, avoid })}
-        placeholder="คำที่ห้ามใช้ สำนวนที่ไม่ชอบ หรือสิ่งที่ทำให้เพลงดูเป็น AI"
+        placeholder="เช่น ห้ามคำเชย ห้ามคำว่า น้ำตา ห้ามเสียงหุ่นยนต์"
         value={form.avoid}
       />
 
       <GenerateButton
-        disabled={!form.story.trim() || !form.mood.trim()}
+        disabled={
+          !form.story.trim() || genreCount === 0 || moodCount === 0
+        }
         loading={loading}
         onClick={onGenerate}
       >
@@ -651,6 +774,85 @@ function ToolPanel({ children, title }) {
   );
 }
 
+function MultiChoiceField({ label, max = 4, onChange, options, value }) {
+  const selected = Array.isArray(value) ? value : [];
+
+  function toggle(option) {
+    if (selected.includes(option)) {
+      onChange(selected.filter((item) => item !== option));
+      return;
+    }
+
+    if (selected.length >= max) return;
+    onChange([...selected, option]);
+  }
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-slate-600">{label}</span>
+        <span className="rounded-full bg-white/60 px-2.5 py-1 text-[11px] font-semibold text-slate-400">
+          เลือกได้ไม่เกิน {max}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
+          const active = selected.includes(option);
+          const locked = !active && selected.length >= max;
+
+          return (
+            <button
+              className={`min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold transition duration-150 hover:-translate-y-0.5 ${
+                active
+                  ? "bg-slate-900 text-white shadow-soft"
+                  : locked
+                    ? "bg-white/35 text-slate-300"
+                    : "bg-white/65 text-slate-600 shadow-sm hover:bg-white"
+              }`}
+              disabled={locked}
+              key={option}
+              onClick={() => toggle(option)}
+              type="button"
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ChoiceField({ label, onChange, options, value }) {
+  return (
+    <div>
+      <span className="mb-2 block text-sm font-semibold text-slate-600">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
+          const active = value === option;
+
+          return (
+            <button
+              className={`min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold transition duration-150 hover:-translate-y-0.5 ${
+                active
+                  ? "bg-slate-900 text-white shadow-soft"
+                  : "bg-white/65 text-slate-600 shadow-sm hover:bg-white"
+              }`}
+              key={option}
+              onClick={() => onChange(option)}
+              type="button"
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SelectField({ label, onChange, options, value }) {
   return (
     <label className="block">
@@ -759,6 +961,21 @@ function readYoutubePreset() {
   } catch {
     return null;
   }
+}
+
+function buildSunoPayload(form) {
+  const genreSelections = Array.isArray(form.genreSelections)
+    ? form.genreSelections
+    : [];
+  const moodSelections = Array.isArray(form.moodSelections)
+    ? form.moodSelections
+    : [];
+
+  return {
+    ...form,
+    genre: genreSelections.join(", "),
+    mood: moodSelections.join(", "),
+  };
 }
 
 const toolLabels = {
