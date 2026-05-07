@@ -86,7 +86,7 @@ const server = http.createServer(async (request, response) => {
     }
 
     sendJson(response, 200, {
-      text: extractText(data),
+      text: formatGeneratedText(body.tool, extractText(data)),
       model: data.model || MODEL,
     });
   } catch (error) {
@@ -375,6 +375,26 @@ function extractText(data) {
     .map((content) => content.text || "")
     .join("")
     .trim();
+}
+
+function formatGeneratedText(tool, text) {
+  if (tool !== "suno") return text;
+  return formatSunoText(text);
+}
+
+function formatSunoText(text) {
+  return text
+    .trim()
+    .replace(/^ชื่อเพลง\s*:\s*(.+)$/im, "ชื่อเพลง............\n$1")
+    .replace(
+      /^styles:\s*(?!ไม่เกิน1000)(.+)$/im,
+      "styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง\n$1"
+    )
+    .replace(/^exclude styles\s*:/im, "Exclude styles:")
+    .replace(/^lyrics:\s*(?!ไม่เกิน5000)(.*)$/im, (_, rest) => {
+      const suffix = rest.trim() ? `\n${rest.trim()}` : "";
+      return `Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ [] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง${suffix}`;
+    });
 }
 
 function readJsonBody(request) {
