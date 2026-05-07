@@ -5,6 +5,7 @@ import {
   Image,
   ImagePlus,
   Lightbulb,
+  Music2,
   Save,
   Send,
   Trash2,
@@ -25,8 +26,23 @@ const defaultYoutubeForm = {
   title: "ชื่อคลิปหรือชื่อเพลง",
 };
 
+const defaultSunoForm = {
+  avoid:
+    "คำซ้ำซากแบบ AI, ประโยคสวยแต่ไม่เจ็บจริง, การบอกอารมณ์ตรง ๆ เกินไป",
+  complexity: "ซับซ้อนแบบโปร",
+  genre: "Thai pop, alt R&B, cinematic ballad",
+  hook: "ประโยคฮุกที่จำง่าย แต่ไม่เชย",
+  language: "ไทย",
+  mood: "คิดถึงแบบเก็บไว้ เศร้าแต่ยังมีศักดิ์ศรี อบอุ่นปนเจ็บ",
+  perspective: "คนที่ยังรัก แต่ต้องทำเหมือนไม่รู้สึกอะไรแล้ว",
+  story:
+    "เล่าเรื่องคนสองคนที่เดินผ่านที่เดิม แต่ไม่มีสิทธิ์ทักกันเหมือนเดิม ใช้ภาพจำเล็ก ๆ ให้คนฟังรู้สึกเอง",
+  vocal: "เสียงร้องอบอุ่น มีรอยแตกเล็กน้อย ช่วงฮุกเปิดกว้างและติดหู",
+};
+
 const toolTabs = [
   { id: "youtube", label: "YouTube Description", icon: Youtube },
+  { id: "suno", label: "Suno Songwriter", icon: Music2 },
   { id: "caption", label: "สร้างแคปชัน", icon: Captions },
   { id: "enhancer", label: "ปรับพรอมป์", icon: WandSparkles },
   { id: "ideas", label: "สุ่มไอเดีย", icon: Lightbulb },
@@ -45,6 +61,7 @@ function AITools({ onCopy, onSavePrompt }) {
   const [youtubeForm, setYoutubeForm] = useState(() =>
     getYoutubeFormDefaults(youtubePreset)
   );
+  const [sunoForm, setSunoForm] = useState(defaultSunoForm);
   const [captionForm, setCaptionForm] = useState({
     platform: "อินสตาแกรม",
     tone: "เป็นกันเอง",
@@ -65,6 +82,7 @@ function AITools({ onCopy, onSavePrompt }) {
   });
   const [outputs, setOutputs] = useState({
     youtube: "",
+    suno: "",
     caption: "",
     enhancer: "",
     ideas: "",
@@ -213,6 +231,20 @@ function AITools({ onCopy, onSavePrompt }) {
                 })
               }
               onSavePreset={saveYoutubePreset}
+            />
+          )}
+
+          {activeTool === "suno" && (
+            <SunoSongTool
+              form={sunoForm}
+              loading={loadingTool === "suno"}
+              onChange={setSunoForm}
+              onGenerate={() =>
+                generate("suno", {
+                  ...sunoForm,
+                  maxOutputTokens: 2800,
+                })
+              }
             />
           )}
 
@@ -365,6 +397,93 @@ function YoutubeDescriptionTool({
         onClick={onGenerate}
       >
         สร้างคำอธิบาย YouTube
+      </GenerateButton>
+    </div>
+  );
+}
+
+function SunoSongTool({ form, loading, onChange, onGenerate }) {
+  return (
+    <div className="grid gap-3">
+      <div className="rounded-[22px] border border-white/70 bg-white/45 p-3 shadow-sm">
+        <p className="text-sm font-semibold text-slate-900">
+          แต่งเพลงสำหรับ Suno 5.5 Pro
+        </p>
+        <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+          เน้นเนื้อเพลงที่มีชั้นอารมณ์ มีภาพจำ มี dynamic และไม่เขียนเหมือน AI
+        </p>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <SelectField
+          label="ภาษา"
+          value={form.language}
+          onChange={(language) => onChange({ ...form, language })}
+          options={["ไทย", "อังกฤษ", "ไทยปนอังกฤษ", "ญี่ปุ่น", "เกาหลี"]}
+        />
+        <SelectField
+          label="ระดับความซับซ้อน"
+          value={form.complexity}
+          onChange={(complexity) => onChange({ ...form, complexity })}
+          options={[
+            "ฟังง่ายติดหู",
+            "ซับซ้อนแบบโปร",
+            "ดราม่าหนัก",
+            "กวีแต่ยังร้องได้",
+            "เชิงทดลอง / Art pop",
+          ]}
+        />
+      </div>
+
+      <TextInputField
+        label="แนวเพลง / Sound"
+        onChange={(genre) => onChange({ ...form, genre })}
+        placeholder="เช่น Thai pop, alt R&B, cinematic ballad, trap soul"
+        value={form.genre}
+      />
+      <TextAreaField
+        label="อารมณ์เพลง"
+        onChange={(mood) => onChange({ ...form, mood })}
+        placeholder="บอกอารมณ์ให้ละเอียด เช่น เจ็บแบบนิ่ง ๆ, คิดถึงแต่ไม่อยากกลับไป"
+        value={form.mood}
+      />
+      <TextAreaField
+        label="เรื่องที่จะเล่า"
+        onChange={(story) => onChange({ ...form, story })}
+        placeholder="ใส่เรื่องจริง ภาพจำ ฉาก สถานที่ หรือเหตุการณ์ที่อยากให้กลายเป็นเพลง"
+        value={form.story}
+      />
+      <TextInputField
+        label="มุมมองคนร้อง"
+        onChange={(perspective) => onChange({ ...form, perspective })}
+        placeholder="เช่น คนถูกทิ้ง / คนที่ยังรอ / คนที่ทำผิดแต่พูดไม่ได้"
+        value={form.perspective}
+      />
+      <TextInputField
+        label="ฮุกที่อยากให้จำ"
+        onChange={(hook) => onChange({ ...form, hook })}
+        placeholder="ใส่คำหรือประโยคที่อยากให้เป็นแกนของเพลง"
+        value={form.hook}
+      />
+      <TextInputField
+        label="เสียงร้อง / การร้อง"
+        onChange={(vocal) => onChange({ ...form, vocal })}
+        placeholder="เช่น male vocal, breathy, warm, powerful chorus"
+        value={form.vocal}
+      />
+      <TextAreaField
+        label="สิ่งที่ไม่อยากได้"
+        onChange={(avoid) => onChange({ ...form, avoid })}
+        placeholder="คำที่ห้ามใช้ สำนวนที่ไม่ชอบ หรือสิ่งที่ทำให้เพลงดูเป็น AI"
+        value={form.avoid}
+      />
+
+      <GenerateButton
+        disabled={!form.story.trim() || !form.mood.trim()}
+        loading={loading}
+        onClick={onGenerate}
+      >
+        แต่งเพลงสำหรับ Suno
       </GenerateButton>
     </div>
   );
@@ -643,6 +762,7 @@ function readYoutubePreset() {
 
 const toolLabels = {
   youtube: "YouTube Description",
+  suno: "Suno Songwriter",
   caption: "สร้างแคปชัน",
   enhancer: "ปรับพรอมป์",
   ideas: "สุ่มไอเดีย",
@@ -654,6 +774,11 @@ const saveMeta = {
     title: "คำอธิบาย YouTube",
     tags: ["YouTube", "คำอธิบาย", "เอไอ"],
     previewStyle: "rose-sky",
+  },
+  suno: {
+    title: "เพลงสำหรับ Suno",
+    tags: ["Suno", "เพลง", "เนื้อเพลง"],
+    previewStyle: "violet-fog",
   },
   caption: {
     title: "ผลลัพธ์แคปชัน",

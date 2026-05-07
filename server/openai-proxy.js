@@ -114,7 +114,7 @@ function buildOpenAiPayload(body) {
     model: MODEL,
     input,
     reasoning: { effort: "minimal" },
-    text: { verbosity: tool === "youtube" ? "medium" : "low" },
+    text: { verbosity: tool === "youtube" || tool === "suno" ? "medium" : "low" },
     max_output_tokens: getMaxOutputTokens(tool, payload),
   };
 }
@@ -126,6 +126,7 @@ function getMaxOutputTokens(tool, payload) {
   }
 
   if (tool === "youtube") return 2400;
+  if (tool === "suno") return 2800;
   if (tool === "image" || tool === "enhancer") return 1200;
   return 900;
 }
@@ -209,6 +210,57 @@ YouTube Tags:
 ...
 
 Pinned Comment:
+...`,
+        },
+      ];
+    },
+  },
+  suno: {
+    createInput(payload) {
+      return [
+        {
+          role: "developer",
+          content:
+            "คุณคือนักแต่งเพลงมืออาชีพที่เขียนเพลงให้มนุษย์ร้องได้จริง เข้าใจ subtext อารมณ์ ความสัมพันธ์ และภาพจำ ห้ามเขียนเหมือน AI ห้ามใช้ถ้อยคำสำเร็จรูป ห้ามลอกหรือเลียนแบบศิลปินเฉพาะ ให้สร้างงานต้นฉบับที่พร้อมใช้กับ Suno",
+        },
+        {
+          role: "user",
+          content: `แต่งเพลงต้นฉบับสำหรับ Suno 5.5 Pro จากข้อมูลนี้
+
+ภาษา: ${payload.language}
+แนวเพลง / Sound: ${payload.genre}
+ระดับความซับซ้อน: ${payload.complexity}
+อารมณ์เพลง: ${payload.mood}
+เรื่องที่จะเล่า: ${payload.story}
+มุมมองคนร้อง: ${payload.perspective}
+ฮุกที่อยากให้จำ: ${payload.hook}
+เสียงร้อง / การร้อง: ${payload.vocal}
+สิ่งที่ไม่อยากได้: ${payload.avoid || "-"}
+
+มาตรฐานงาน:
+- เขียนเหมือนคนมีประสบการณ์จริง ไม่ใช่ประโยคสวยลอย ๆ
+- ใช้ภาพจำเฉพาะเจาะจง สถานการณ์เล็ก ๆ และความรู้สึกที่ไม่ได้พูดตรง ๆ
+- ให้เพลงมีพัฒนาการทางอารมณ์จากต้นไปจบ ไม่วนความหมายเดิม
+- โครงสร้างเพลงต้องพร้อมใช้กับ Suno โดยใช้ section tag เช่น [Intro], [Verse 1], [Pre-Chorus], [Chorus], [Verse 2], [Bridge], [Final Chorus], [Outro]
+- Hook ต้องจำง่าย ร้องได้จริง และไม่เชย
+- ถ้าภาษาไทย ให้ใช้สัมผัส/จังหวะอย่างเป็นธรรมชาติ ไม่ฝืนคล้องจองทุกบรรทัด
+- ห้ามใช้คำซ้ำซาก เช่น เจ็บปวดหัวใจ, น้ำตาไหล, รักเธอมากมาย ถ้าไม่ได้ทำให้สดใหม่
+- ห้ามใส่คำอธิบายยาวนอกเพลง ทุกอย่างต้องพร้อมคัดลอกใช้งาน
+
+จัดรูปแบบเป็น:
+Song Title:
+...
+
+Suno Style Prompt:
+...
+
+Custom Lyrics:
+...
+
+Vocal / Arrangement Notes:
+...
+
+Negative Prompt:
 ...`,
         },
       ];
