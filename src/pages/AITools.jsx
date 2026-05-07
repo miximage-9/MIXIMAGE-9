@@ -154,10 +154,26 @@ const toolTabs = [
   { id: "image", label: "วิเคราะห์ภาพ", icon: Image },
 ];
 
+const toolModeBadges = {
+  default: {
+    className: "bg-emerald-100/70 text-emerald-700",
+    label: "โหมดประหยัด: จีพีทีไฟว์มินิ",
+  },
+  suno: {
+    className: "bg-indigo-100/75 text-indigo-700",
+    label: "โหมดเพลง: โปรดักชันละเอียด + เนื้อร้องลึก",
+  },
+  youtube: {
+    className: "bg-sky-100/75 text-sky-700",
+    label: "โหมด YouTube SEO: พร้อมวางใต้คลิป",
+  },
+};
+
 function AITools({ onCopy, onSavePrompt }) {
   const [activeTool, setActiveTool] = useState("youtube");
   const [loadingTool, setLoadingTool] = useState(null);
   const [error, setError] = useState("");
+  const modeBadge = toolModeBadges[activeTool] || toolModeBadges.default;
   const [youtubePreset, setYoutubePreset] = useLocalStorage(
     "mixtoole-youtube-description-preset-v1",
     null
@@ -283,8 +299,8 @@ function AITools({ onCopy, onSavePrompt }) {
               ใช้เครดิต OpenAI ผ่าน server ในเครื่อง คัดลอกผลลัพธ์ หรือบันทึกเข้าคลังพรอมป์ได้ทันที
             </p>
           </div>
-          <span className="rounded-full bg-emerald-100/70 px-3 py-1.5 text-xs font-semibold text-emerald-700">
-            โหมดประหยัด: จีพีทีไฟว์มินิ
+          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${modeBadge.className}`}>
+            {modeBadge.label}
           </span>
         </div>
       </header>
