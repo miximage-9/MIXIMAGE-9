@@ -337,11 +337,21 @@ function formatSunoText(text) {
       /^styles:\s*(?!ไม่เกิน1000)(.+)$/im,
       "styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง\n$1"
     )
+    .replace(
+      /(styles: ไม่เกิน1000 แต่ห้ามข้ามสิ่งต้องมีหาจำนวนยังเหลือง)\n\s*ไม่เกิน1000[^\n]*\n/im,
+      "$1\n"
+    )
     .replace(/^exclude styles\s*:/im, "Exclude styles:")
+    .replace(/^Weirdness%.*$/im, "Weirdness%")
+    .replace(/^Style Influence%.*$/im, "Style Influence%")
     .replace(/^lyrics:\s*(?!ไม่เกิน5000)(.*)$/im, (_, rest) => {
       const suffix = rest.trim() ? `\n${rest.trim()}` : "";
       return `Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ [] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง${suffix}`;
-    });
+    })
+    .replace(
+      /(Lyrics: ไม่เกิน5000ตัวอักษร เราให้น้ำหนักที่ \[\] เราเน้นเล่นใหญ่ที่การควบคุมไม่ใช่เนื้อร้อง)\n\s*ไม่เกิน5000[^\n]*\n/im,
+      "$1\n"
+    );
 }
 
 function sendJson(statusCode, data) {
