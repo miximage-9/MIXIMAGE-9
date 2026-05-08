@@ -2,102 +2,246 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color: #243047;
-  font-family: "Noto Sans Thai", "Leelawadee UI", Tahoma, ui-sans-serif,
-    system-ui, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-}
+/* MIX-IMAGE Prompt Library — Dark + Neon Design System (HSL only) */
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    /* base surfaces — deep almost-black with subtle blue-violet hint */
+    --background: 240 24% 4%;
+    --foreground: 150 25% 92%;
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background:
-    linear-gradient(135deg, rgba(255, 238, 245, 0.96), rgba(231, 248, 255, 0.96) 38%, rgba(247, 242, 210, 0.9) 66%, rgba(232, 248, 231, 0.95)),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.44) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.38) 1px, transparent 1px);
-  background-size: auto, 52px 52px, 52px 52px;
-}
+    --surface: 240 18% 7%;
+    --surface-elevated: 240 16% 10%;
+    --surface-glass: 240 20% 8%;
 
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  content: "";
-  background:
-    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.64), transparent 24rem),
-    radial-gradient(circle at 84% 18%, rgba(255, 246, 184, 0.38), transparent 22rem),
-    radial-gradient(circle at 12% 88%, rgba(190, 226, 255, 0.46), transparent 26rem),
-    radial-gradient(circle at 86% 84%, rgba(211, 244, 206, 0.4), transparent 22rem);
-}
+    --card: 240 18% 7%;
+    --card-foreground: 150 20% 92%;
 
-button,
-input,
-textarea {
-  font: inherit;
-}
+    --popover: 240 20% 6%;
+    --popover-foreground: 150 20% 92%;
 
-button {
-  -webkit-tap-highlight-color: transparent;
-}
+    /* Neon accents */
+    --neon-green: 145 100% 61%;        /* #39FF8B */
+    --neon-green-glow: 145 100% 61%;
+    --neon-pink: 318 100% 62%;         /* #FF3DCB */
+    --neon-pink-glow: 318 100% 62%;
+    --neon-cyan: 180 100% 60%;
 
-::selection {
-  background: rgba(244, 166, 205, 0.38);
-}
+    --primary: 145 100% 61%;
+    --primary-foreground: 240 24% 4%;
 
-.field-input {
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.66);
-  padding: 0 1rem;
-  color: #334155;
-  outline: none;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.62) inset;
-  transition:
-    background 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-}
+    --secondary: 318 100% 62%;
+    --secondary-foreground: 240 24% 4%;
 
-.field-input:focus {
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow:
-    0 0 0 4px rgba(226, 232, 240, 0.72),
-    0 1px 0 rgba(255, 255, 255, 0.72) inset;
-}
+    --muted: 240 12% 14%;
+    --muted-foreground: 240 8% 60%;
 
-.field-input::placeholder {
-  color: #94a3b8;
-}
+    --accent: 145 100% 61%;
+    --accent-foreground: 240 24% 4%;
 
-.no-scrollbar {
-  scrollbar-width: none;
-}
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+    --border: 240 14% 18%;
+    --border-subtle: 240 14% 14%;
+    --input: 240 14% 16%;
+    --ring: 145 100% 61%;
 
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.96);
-  }
+    --radius: 0.85rem;
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    --gradient-neon: linear-gradient(135deg, hsl(var(--neon-green)) 0%, hsl(var(--neon-pink)) 100%);
+    --gradient-neon-soft: linear-gradient(135deg, hsl(var(--neon-green) / 0.18) 0%, hsl(var(--neon-pink) / 0.18) 100%);
+    --gradient-surface: linear-gradient(180deg, hsl(240 20% 8%) 0%, hsl(240 22% 5%) 100%);
+
+    --shadow-neon-green: 0 0 24px -4px hsl(var(--neon-green) / 0.55), 0 0 60px -20px hsl(var(--neon-green) / 0.4);
+    --shadow-neon-pink: 0 0 24px -4px hsl(var(--neon-pink) / 0.55), 0 0 60px -20px hsl(var(--neon-pink) / 0.4);
+    --shadow-neon-mix: 0 8px 32px -10px hsl(var(--neon-green) / 0.35), 0 0 60px -20px hsl(var(--neon-pink) / 0.35);
+    --shadow-elevated: 0 20px 50px -20px hsl(0 0% 0% / 0.7), 0 1px 0 0 hsl(var(--neon-green) / 0.06) inset;
+
+    --sidebar-background: 240 20% 6%;
+    --sidebar-foreground: 150 15% 80%;
+    --sidebar-primary: 145 100% 61%;
+    --sidebar-primary-foreground: 240 24% 4%;
+    --sidebar-accent: 240 14% 12%;
+    --sidebar-accent-foreground: 150 20% 90%;
+    --sidebar-border: 240 14% 16%;
+    --sidebar-ring: 145 100% 61%;
   }
 }
 
-.animate-toast {
-  animation: toast-in 180ms ease-out;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Kanit', system-ui, sans-serif;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 0% 0%, hsl(var(--neon-green) / 0.10), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, hsl(var(--neon-pink) / 0.10), transparent 60%),
+      radial-gradient(ellipse 80% 50% at 50% 0%, hsl(240 30% 12% / 0.6), transparent 70%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-anchor: none;
+  }
+
+  html {
+    overflow-anchor: none;
+    scroll-behavior: auto;
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--surface)); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, hsl(var(--neon-green) / 0.4), hsl(var(--neon-pink) / 0.4));
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, hsl(var(--neon-green) / 0.7), hsl(var(--neon-pink) / 0.7));
+  }
+
+  .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+}
+
+@layer components {
+  .panel-glass {
+    background: linear-gradient(180deg, hsl(240 20% 9% / 0.9), hsl(240 24% 5% / 0.9));
+    border: 1px solid hsl(var(--border-subtle));
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .neon-border {
+    position: relative;
+    border: 1px solid hsl(var(--neon-green) / 0.3);
+  }
+
+  .neon-text-green { color: hsl(var(--neon-green)); text-shadow: 0 0 14px hsl(var(--neon-green) / 0.55); }
+  .neon-text-pink  { color: hsl(var(--neon-pink));  text-shadow: 0 0 14px hsl(var(--neon-pink) / 0.55); }
+
+  .neon-gradient-text {
+    background: var(--gradient-neon);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn-neon {
+    background: var(--gradient-neon);
+    color: hsl(var(--background));
+    font-weight: 700;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-neon-mix);
+    transition: transform 0.15s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  }
+  .btn-neon:hover { filter: brightness(1.08); box-shadow: var(--shadow-neon-green), var(--shadow-neon-pink); }
+  .btn-neon:active { transform: scale(0.98); }
+
+  .prompt-card {
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease;
+    border: 1px solid hsl(var(--border-subtle));
+  }
+  .prompt-card:hover {
+    border-color: hsl(var(--neon-green) / 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px -10px hsl(var(--neon-green) / 0.35);
+  }
+
+  .keyword-slot { color: hsl(var(--neon-pink)); font-weight: 700; text-decoration: underline; text-shadow: 0 0 12px hsl(var(--neon-pink) / 0.6); transition: all 0.3s; }
+  .keyword-slot.filled { color: hsl(var(--neon-green)); text-decoration: none; text-shadow: 0 0 14px hsl(var(--neon-green) / 0.65); }
+
+  .inject-flash { animation: flashGreen 0.6s ease; }
+  @keyframes flashGreen {
+    0%   { box-shadow: 0 0 0 0 hsl(var(--neon-green) / 0.7); }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  .tabs-scroll { -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs-scroll::-webkit-scrollbar { display: none; }
+
+  .output-box {
+    background: hsl(240 30% 3%);
+    border: 1px solid hsl(var(--neon-green) / 0.35);
+    box-shadow: inset 0 0 30px hsl(var(--neon-green) / 0.06), 0 0 24px -10px hsl(var(--neon-green) / 0.4);
+    color: hsl(var(--neon-green));
+  }
+}
+
+@layer components {
+  /* New glassmorphism utilities for premium UI */
+  .glass-card {
+    background: linear-gradient(180deg, hsl(240 30% 12% / 0.55), hsl(240 30% 6% / 0.55));
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+      0 20px 50px -25px hsl(0 0% 0% / 0.7);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease;
+  }
+  .glass-card:hover {
+    border-color: hsl(var(--neon-green) / 0.35);
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.08),
+      0 30px 60px -20px hsl(0 0% 0% / 0.8),
+      0 0 30px -10px hsl(var(--neon-green) / 0.45);
+  }
+
+  .glass-card-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 80% at 100% 0%, hsl(var(--neon-green) / 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 80% at 0% 100%, hsl(var(--neon-pink) / 0.15), transparent 60%),
+      linear-gradient(180deg, hsl(240 30% 10% / 0.7), hsl(240 30% 5% / 0.7));
+    border: 1px solid hsl(0 0% 100% / 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.08),
+      0 30px 80px -30px hsl(0 0% 0% / 0.8);
+  }
+
+  .float-3d {
+    filter: drop-shadow(0 20px 30px hsl(var(--neon-green) / 0.25))
+            drop-shadow(0 10px 20px hsl(0 0% 0% / 0.5));
+    animation: float-y 5s ease-in-out infinite;
+  }
+  @keyframes float-y {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-8px); }
+  }
+
+  .section-title {
+    position: relative;
+    padding-left: 14px;
+  }
+  .section-title::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 4px; bottom: 4px;
+    width: 3px;
+    background: var(--gradient-neon);
+    border-radius: 2px;
+    box-shadow: 0 0 12px hsl(var(--neon-green) / 0.7);
+  }
+
+  .chip-toggle {
+    @apply inline-flex cursor-pointer select-none items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition;
+    border-color: hsl(var(--border));
+    background: hsl(var(--surface) / 0.6);
+    color: hsl(var(--muted-foreground));
+  }
+  .chip-toggle:hover {
+    color: hsl(var(--foreground));
+    border-color: hsl(0 70% 60% / 0.4);
+  }
+  .chip-toggle.active {
+    background: hsl(0 70% 55% / 0.15);
+    border-color: hsl(0 70% 60% / 0.5);
+    color: hsl(0 80% 75%);
+    box-shadow: 0 0 14px -4px hsl(0 70% 55% / 0.6);
+  }
 }

@@ -387,9 +387,14 @@ function normalizeSyncData(payload) {
     clipboardHistory: Array.isArray(payload.clipboardHistory)
       ? payload.clipboardHistory.slice(0, 20)
       : [],
+    favorites: Array.isArray(payload.favorites) ? payload.favorites : [],
+    presets: Array.isArray(payload.presets) ? payload.presets.slice(0, 30) : [],
+    promptHistory: Array.isArray(payload.promptHistory)
+      ? payload.promptHistory.slice(0, 15)
+      : [],
     prompts: Array.isArray(payload.prompts) ? payload.prompts : [],
     updatedAt: new Date().toISOString(),
-    version: 1,
+    version: 2,
     youtubePreset:
       payload.youtubePreset && typeof payload.youtubePreset === "object"
         ? payload.youtubePreset
@@ -400,9 +405,12 @@ function normalizeSyncData(payload) {
 function createEmptySyncData() {
   return {
     clipboardHistory: [],
+    favorites: [],
+    presets: [],
+    promptHistory: [],
     prompts: [],
     updatedAt: null,
-    version: 1,
+    version: 2,
     youtubePreset: null,
   };
 }
@@ -483,6 +491,10 @@ function setCorsHeaders(response, request) {
     "https://xn--72c0cfk8azcc4p.xyz",
     "http://www.xn--72c0cfk8azcc4p.xyz",
     "https://www.xn--72c0cfk8azcc4p.xyz",
+    "http://miximage.one",
+    "https://miximage.one",
+    "http://www.miximage.one",
+    "https://www.miximage.one",
   ]);
 
   if (allowedOrigins.has(origin)) {
@@ -490,7 +502,7 @@ function setCorsHeaders(response, request) {
   }
 
   response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type,X-Sync-Key");
 }
 
 function sendJson(response, statusCode, data) {

@@ -65,9 +65,14 @@ function normalizeWorkspace(payload) {
     clipboardHistory: Array.isArray(payload.clipboardHistory)
       ? payload.clipboardHistory.slice(0, 20)
       : [],
+    favorites: Array.isArray(payload.favorites) ? payload.favorites : [],
+    presets: Array.isArray(payload.presets) ? payload.presets.slice(0, 30) : [],
+    promptHistory: Array.isArray(payload.promptHistory)
+      ? payload.promptHistory.slice(0, 15)
+      : [],
     prompts: Array.isArray(payload.prompts) ? payload.prompts : [],
     updatedAt: new Date().toISOString(),
-    version: 1,
+    version: 2,
     youtubePreset:
       payload.youtubePreset && typeof payload.youtubePreset === "object"
         ? payload.youtubePreset
@@ -78,9 +83,12 @@ function normalizeWorkspace(payload) {
 function createEmptyWorkspace() {
   return {
     clipboardHistory: [],
+    favorites: [],
+    presets: [],
+    promptHistory: [],
     prompts: [],
     updatedAt: null,
-    version: 1,
+    version: 2,
     youtubePreset: null,
   };
 }
