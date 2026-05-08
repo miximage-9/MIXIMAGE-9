@@ -10,6 +10,7 @@ import { ProfessionsTab } from "@/components/ProfessionsTab";
 import { HeroSection } from "@/components/HeroSection";
 import { HistoryDrawer } from "@/components/HistoryDrawer";
 import { CloudSyncModal } from "@/components/CloudSyncModal";
+import { AiStudioTab } from "@/components/AiStudioTab";
 import { useFavorites } from "@/hooks/useFavorites";
 
 const Index = () => {
@@ -34,6 +35,7 @@ const Index = () => {
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6">
         {tab === "generator" && <HeroSection />}
         {tab === "generator" && <PromptGenerator />}
+        {tab === "ai" && <AiStudioTab />}
         {tab === "documents" && <DocumentPhotosTab search={search} />}
         {tab === "uniforms" && <UniformsTab search={search} />}
         {tab === "professions" && <ProfessionsTab search={search} />}

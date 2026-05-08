@@ -1,10 +1,11 @@
 import { Search, Star, Sparkles, Clock, Cloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TabKey = "generator" | "documents" | "uniforms" | "professions" | "special" | "library" | "favorites";
+export type TabKey = "generator" | "ai" | "documents" | "uniforms" | "professions" | "special" | "library" | "favorites";
 
 const TABS: { key: TabKey; label: string; icon: string }[] = [
   { key: "generator", label: "สร้างพรอมต์", icon: "🛠️" },
+  { key: "ai", label: "AI Tools", icon: "✨" },
   { key: "documents", label: "รูปติดบัตร", icon: "📸" },
   { key: "uniforms", label: "ชุดนักเรียน", icon: "👔" },
   { key: "professions", label: "สายอาชีพ", icon: "💼" },

@@ -73,16 +73,67 @@ function getMaxOutputTokens(tool, payload) {
   }
 
   if (tool === "youtube") return 2400;
+  if (tool === "content" || tool === "imagePrompt" || tool === "promptTune") return 2200;
   if (tool === "image" || tool === "enhancer") return 1200;
   return 900;
 }
 
 function getTextVerbosity(tool) {
-  if (tool === "youtube") return "medium";
+  if (tool === "youtube" || tool === "content" || tool === "imagePrompt" || tool === "promptTune") return "medium";
   return "low";
 }
 
 const toolPrompts = {
+  content: {
+    createInput(payload) {
+      return [
+        {
+          role: "developer",
+          content:
+            "คุณคือครีเอทีฟไดเรกเตอร์และนักเขียนคอนเทนต์ภาษาไทย เขียนให้เหมือนคนทำงานจริง ไม่แข็ง ไม่เว่อร์ ไม่ใส่ข้อมูลที่ผู้ใช้ไม่ได้ให้ และทำให้พร้อมคัดลอกไปใช้ทันที",
+        },
+        {
+          role: "user",
+          content: `สร้างคอนเทนต์ภาษาไทยจากบรีฟนี้
+
+แพลตฟอร์ม: ${payload.platform}
+ประเภทคอนเทนต์: ${payload.contentType}
+หัวข้อ / สินค้า / บริการ: ${payload.topic}
+กลุ่มเป้าหมาย: ${payload.audience || "ผู้ชมทั่วไป"}
+เป้าหมาย: ${payload.goal || "ให้คนสนใจและลงมือทำ"}
+โทนภาษา: ${payload.tone || "เป็นธรรมชาติ"}
+ข้อมูลขาย / โปร / จุดเด่น / ช่องทางติดต่อ:
+${payload.offer || "-"}
+ข้อกำหนด / คำที่ห้ามใช้:
+${payload.constraints || "-"}
+
+ข้อกำหนดผลลัพธ์:
+- เขียนให้เหมาะกับแพลตฟอร์มจริง
+- เปิดด้วย hook ที่ดึงความสนใจแต่ไม่หลอก
+- เนื้อหาต้องอ่านแล้วเข้าใจทันที
+- ถ้าไม่มีข้อมูลราคา เบอร์ ลิงก์ หรือโปร ห้ามแต่งเอง
+- มี CTA ที่ตรงกับเป้าหมาย
+- ใส่ hashtag ที่เกี่ยวข้อง ไม่ยัดเกินจำเป็น
+- เพิ่มอีก 3 มุมคอนเทนต์สำรองแบบสั้น
+
+จัดรูปแบบเป็น:
+คอนเทนต์พร้อมโพสต์:
+...
+
+CTA:
+...
+
+Hashtags:
+...
+
+ไอเดียต่อยอด 3 แบบ:
+1. ...
+2. ...
+3. ...`,
+        },
+      ];
+    },
+  },
   caption: {
     createInput(payload) {
       return [
@@ -243,6 +294,139 @@ ${payload.prompt}
               image_url: payload.imageDataUrl,
             },
           ],
+        },
+      ];
+    },
+  },
+  imagePrompt: {
+    createInput(payload) {
+      if (!payload.imageDataUrl) {
+        throw new Error("ยังไม่ได้อัปโหลดภาพ");
+      }
+
+      return [
+        {
+          role: "developer",
+          content:
+            "คุณคือผู้เชี่ยวชาญการวิเคราะห์ภาพและเขียนพรอมต์สำหรับ GPT Image 2 ให้ใช้งานได้จริง คุม subject, composition, lighting, material, camera, style และข้อห้ามอย่างชัดเจน",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `วิเคราะห์ภาพอ้างอิงนี้แล้วแตกเป็นพรอมต์สำหรับ GPT Image 2
+
+บรีฟ: ${payload.brief || "-"}
+เอาไปใช้กับ: ${payload.subject || payload.targetUse || "-"}
+รูปแบบงาน: ${payload.targetUse || "-"}
+สไตล์ผลลัพธ์: ${payload.outputStyle || "-"}
+สัดส่วนภาพ: ${payload.ratio || "-"}
+สิ่งที่ต้องคงไว้: ${payload.mustKeep || "-"}
+
+ข้อกำหนด:
+- วิเคราะห์เฉพาะสิ่งที่มองเห็นหรืออนุมานจากภาพได้อย่างสมเหตุสมผล
+- สร้างพรอมต์ที่เอาไปใช้กับ GPT Image 2 ได้ทันที
+- แยกส่วนให้ผู้ใช้คัดลอกง่าย
+- ถ้ามีคน/ตัวละคร/สินค้า ให้เน้น identity-safe description โดยไม่อ้างชื่อบุคคลจริง
+- ระบุว่าควรใช้ภาพนี้เป็น reference อย่างไร
+- ใส่ negative prompt เพื่อกันภาพเพี้ยน
+- ห้ามบรรยายเกินจริงหรือแต่งรายละเอียดสำคัญที่ไม่มีในภาพ
+
+จัดรูปแบบเป็น:
+สรุปภาพ:
+...
+
+องค์ประกอบสำคัญ:
+...
+
+Prompt พร้อมใช้กับ GPT Image 2:
+...
+
+Reference instruction:
+...
+
+Negative prompt:
+...
+
+Short prompt:
+...`,
+            },
+            {
+              type: "input_image",
+              image_url: payload.imageDataUrl,
+            },
+          ],
+        },
+      ];
+    },
+  },
+  promptTune: {
+    createInput(payload) {
+      if (!payload.originalPrompt && !payload.imageDataUrl) {
+        throw new Error("ต้องมีพรอมต์เดิมหรือภาพอ้างอิงอย่างน้อย 1 อย่าง");
+      }
+
+      const content = [
+        {
+          type: "input_text",
+          text: `จูนพรอมต์นี้ให้ใช้งานจริงกับ GPT Image 2
+
+พรอมต์เดิม:
+${payload.originalPrompt || "-"}
+
+ความต้องการ:
+${payload.requirements || "-"}
+
+ใช้กับ:
+${payload.targetUse || "-"}
+
+ระดับการปรับ:
+${payload.intensity || "-"}
+
+รูปแบบผลลัพธ์:
+${payload.outputStyle || "-"}
+
+ข้อกำหนด:
+- รักษาเจตนาหลักของพรอมต์เดิม
+- ปรับภาษาให้ชัด คุมภาพได้ดี และลดความกำกวม
+- ถ้ามีภาพอ้างอิง ให้จูนให้สอดคล้องกับภาพ
+- ระบุ subject, composition, lighting, style, camera/framing, detail, constraints ให้ครบ
+- ใส่ negative prompt เฉพาะสิ่งที่ช่วยลดภาพเสีย
+- ห้ามใส่ข้อมูลที่ขัดกับบรีฟหรือภาพ
+- ส่งผลลัพธ์ที่คัดลอกไปใช้ได้ทันที
+
+จัดรูปแบบเป็น:
+Prompt ที่จูนแล้ว:
+...
+
+Reference instruction:
+...
+
+Negative prompt:
+...
+
+Short version:
+...`,
+        },
+      ];
+
+      if (payload.imageDataUrl) {
+        content.push({
+          type: "input_image",
+          image_url: payload.imageDataUrl,
+        });
+      }
+
+      return [
+        {
+          role: "developer",
+          content:
+            "คุณคือ prompt engineer สำหรับ GPT Image 2 งานของคุณคือจูนพรอมต์ให้แม่นขึ้น ใช้ได้จริง และไม่ทำให้ผลลัพธ์หลุดเจตนาเดิม",
+        },
+        {
+          role: "user",
+          content,
         },
       ];
     },
