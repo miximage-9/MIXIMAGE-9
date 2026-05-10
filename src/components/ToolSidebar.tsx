@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 const TOOLS = [
   { num: 1, title: "สร้างภาพ Before & After", url: "https://miximageart.netlify.app/", host: "miximageart.netlify.app", color: "text-neon-green" },
   { num: 2, title: "ใบสั่งผลิตเพลง AI", url: "https://musicproduction.lovable.app/", host: "musicproduction.lovable.app", color: "text-neon-pink" },
-  { num: 3, title: "MIX PROMPT GEN", url: "https://mix-image.store/", host: "mix-image.store", color: "text-neon-green" },
+  { num: 3, title: "เครื่องมือสร้างพรอมต์", url: "https://miximage-megic.lovable.app", host: "miximage-megic.lovable.app", color: "text-neon-green" },
   { num: 4, title: "MIX-Lyric", url: "https://miximage-lyric.netlify.app/", host: "miximage-lyric.netlify.app", color: "text-neon-pink" },
   { num: 5, title: "Crop business card", url: "https://miximagecard.netlify.app/", host: "miximagecard.netlify.app", color: "text-neon-cyan" },
   { num: 6, title: "ID / ทะเบียนบ้าน", url: "https://id-house.netlify.app/", host: "id-house.netlify.app", color: "text-neon-cyan" },
