@@ -3,6 +3,7 @@ import { createReadStream } from "node:fs";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { generateGeminiImage, getGeminiImageStatus } from "./gemini-image.js";
 
 const PORT = Number(process.env.PORT || process.env.OPENAI_PROXY_PORT || 8787);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -32,12 +33,18 @@ const server = http.createServer(async (request, response) => {
       ok: true,
       model: MODEL,
       hasKey: Boolean(process.env.OPENAI_API_KEY),
+      imageGeneration: getGeminiImageStatus(process.env),
     });
     return;
   }
 
   if (pathname === "/api/sync") {
     await handleLocalSync(request, response);
+    return;
+  }
+
+  if (pathname === "/api/image-generate") {
+    await handleLocalImageGenerate(request, response);
     return;
   }
 
@@ -117,6 +124,24 @@ function buildOpenAiPayload(body) {
     text: { verbosity: getTextVerbosity(tool) },
     max_output_tokens: getMaxOutputTokens(tool, payload),
   };
+}
+
+async function handleLocalImageGenerate(request, response) {
+  if (request.method !== "POST") {
+    sendJson(response, 405, { error: "รองรับเฉพาะ POST เท่านั้น" });
+    return;
+  }
+
+  try {
+    const payload = await readJsonBody(request);
+    const result = await generateGeminiImage(payload, process.env);
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, error.statusCode || 500, {
+      detail: error.detail,
+      error: error.message || "สร้างภาพไม่สำเร็จ",
+    });
+  }
 }
 
 function getMaxOutputTokens(tool, payload) {

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Copy,
+  Download,
   FileText,
   ImagePlus,
   Loader2,
@@ -18,26 +19,40 @@ import { cn } from "@/lib/utils";
 import { useHistory } from "@/hooks/useHistory";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api/generate";
+const IMAGE_API_URL = import.meta.env.VITE_IMAGE_API_URL || "/api/image-generate";
 
-type Mode = "content" | "youtube" | "prompt";
+type Mode = "content" | "youtube" | "prompt" | "imageGen";
 type OutputKey = "content" | "youtube" | "imagePrompt" | "promptTune";
+type LoadingKey = OutputKey | "imageGenerate";
 
 type ImageValue = {
   imageDataUrl: string;
   fileName: string;
 };
 
+type GeneratedImage = {
+  createdAt: string;
+  dataUrl: string;
+  filename: string;
+  mimeType: string;
+  model: string;
+  prompt: string;
+  provider: string;
+  text?: string;
+};
+
 const modes: { id: Mode; label: string; icon: typeof Sparkles }[] = [
   { id: "content", label: "ปั้นคอนเทนต์", icon: FileText },
   { id: "youtube", label: "YouTube", icon: Youtube },
   { id: "prompt", label: "ออกแบบพรอมต์ภาพ", icon: PenTool },
+  { id: "imageGen", label: "สร้างภาพ", icon: ImagePlus },
 ];
 
 const emptyImage: ImageValue = { imageDataUrl: "", fileName: "" };
 
 export function AiStudioTab() {
   const [mode, setMode] = useState<Mode>("prompt");
-  const [loading, setLoading] = useState<OutputKey | null>(null);
+  const [loading, setLoading] = useState<LoadingKey | null>(null);
   const [error, setError] = useState("");
   const { push } = useHistory();
 
@@ -79,6 +94,14 @@ export function AiStudioTab() {
     outputStyle: "พร้อมคัดลอกไปใช้ทันที",
   });
 
+  const [imageGenForm, setImageGenForm] = useState({
+    ...emptyImage,
+    aspectRatio: "1:1",
+    imageSize: "1K",
+    prompt: "",
+  });
+  const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
+
   const [outputs, setOutputs] = useState<Record<OutputKey, string>>({
     content: "",
     youtube: "",
@@ -113,6 +136,55 @@ export function AiStudioTab() {
     }
   }
 
+  async function generateImage() {
+    const prompt = imageGenForm.prompt.trim();
+    if (!prompt) return;
+
+    setError("");
+    setLoading("imageGenerate");
+
+    try {
+      const response = await fetch(IMAGE_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          aspectRatio: imageGenForm.aspectRatio,
+          imageSize: imageGenForm.imageSize,
+          prompt,
+          referenceImageDataUrl: imageGenForm.imageDataUrl || undefined,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail ? `${data.error}: ${data.detail}` : data.error || "สร้างภาพไม่สำเร็จ");
+      }
+
+      const firstImage = data.images?.[0];
+      if (!firstImage?.dataUrl) {
+        throw new Error("ไม่พบรูปภาพจากระบบ");
+      }
+
+      setGeneratedImage({
+        createdAt: data.createdAt,
+        dataUrl: firstImage.dataUrl,
+        filename: firstImage.filename || "miximage-gemini.png",
+        mimeType: firstImage.mimeType || "image/png",
+        model: data.model,
+        prompt: data.prompt || prompt,
+        provider: data.provider || "vertex-ai",
+        text: data.text,
+      });
+      toast.success("สร้างภาพแล้ว");
+    } catch (caughtError) {
+      const message =
+        caughtError instanceof Error ? caughtError.message : "สร้างภาพไม่สำเร็จ";
+      setError(message.includes("fetch") ? "เรียก API สร้างภาพไม่สำเร็จ" : message);
+    } finally {
+      setLoading(null);
+    }
+  }
+
   async function copyOutput(outputKey: OutputKey, label: string) {
     const text = outputs[outputKey];
     if (!text.trim()) return;
@@ -120,6 +192,26 @@ export function AiStudioTab() {
     await navigator.clipboard.writeText(text);
     push(text, label);
     toast.success("คัดลอกแล้ว", { description: label });
+  }
+
+  async function copyImagePrompt() {
+    const text = generatedImage?.prompt || imageGenForm.prompt;
+    if (!text.trim()) return;
+
+    await navigator.clipboard.writeText(text);
+    push(text, "Gemini Image Prompt");
+    toast.success("คัดลอกพรอมต์แล้ว");
+  }
+
+  function downloadGeneratedImage() {
+    if (!generatedImage) return;
+
+    const link = document.createElement("a");
+    link.href = generatedImage.dataUrl;
+    link.download = generatedImage.filename || "miximage-gemini.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 
   return (
@@ -131,10 +223,10 @@ export function AiStudioTab() {
               AI Tools
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-              เครื่องมือสร้างคอนเทนต์และพรอมต์ภาพ
+              เครื่องมือสร้างคอนเทนต์ พรอมต์ และภาพ
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              ปั้นคอนเทนต์, เขียนคำอธิบาย YouTube, แตกภาพเป็นพรอมต์ และจูนพรอมต์ให้พร้อมใช้กับ GPT Image 2
+              ปั้นคอนเทนต์, เขียนคำอธิบาย YouTube, แตกภาพเป็นพรอมต์, จูนพรอมต์ และสร้างภาพด้วย Gemini
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-surface/60 p-3 text-xs text-muted-foreground">
@@ -441,6 +533,76 @@ export function AiStudioTab() {
           </Panel>
         </div>
       )}
+
+      {mode === "imageGen" && (
+        <div className="grid items-start gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+          <Panel
+            title="สร้างภาพด้วย Gemini 3.1"
+            subtitle="ใส่พรอมต์ เลือกสัดส่วน และแนบภาพอ้างอิงได้ ผลลัพธ์ดาวน์โหลดได้ทันที"
+          >
+            <TextArea
+              label="พรอมต์สร้างภาพ"
+              value={imageGenForm.prompt}
+              onChange={(prompt) => setImageGenForm({ ...imageGenForm, prompt })}
+              placeholder="เช่น ภาพสินค้าโทนพรีเมียมบนฉากเรียบ แสงนุ่ม รายละเอียดชัด ใช้งานลงโฆษณา"
+              rows={8}
+            />
+            <div className="grid gap-3 md:grid-cols-2">
+              <SelectField
+                label="สัดส่วนภาพ"
+                value={imageGenForm.aspectRatio}
+                onChange={(aspectRatio) => setImageGenForm({ ...imageGenForm, aspectRatio })}
+                options={["1:1", "4:5", "3:4", "4:3", "16:9", "9:16"]}
+              />
+              <SelectField
+                label="ขนาดภาพ"
+                value={imageGenForm.imageSize}
+                onChange={(imageSize) => setImageGenForm({ ...imageGenForm, imageSize })}
+                options={["1K", "2K", "4K"]}
+              />
+            </div>
+            <ImageInput
+              label="ภาพอ้างอิง (ไม่บังคับ)"
+              value={imageGenForm}
+              onChange={(image) => setImageGenForm({ ...imageGenForm, ...image })}
+            />
+            <div className="grid gap-2 md:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setImageGenForm({ ...imageGenForm, prompt: outputs.imagePrompt })}
+                disabled={!outputs.imagePrompt}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-neon-cyan/30 bg-neon-cyan/10 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/15 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                ใช้พรอมต์จากภาพ
+              </button>
+              <button
+                type="button"
+                onClick={() => setImageGenForm({ ...imageGenForm, prompt: outputs.promptTune })}
+                disabled={!outputs.promptTune}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-neon-green/30 bg-neon-green/10 px-4 text-sm font-bold text-neon-green transition hover:bg-neon-green/15 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Sparkles className="h-4 w-4" />
+                ใช้พรอมต์ที่จูนแล้ว
+              </button>
+            </div>
+            <GenerateButton
+              loading={loading === "imageGenerate"}
+              disabled={!imageGenForm.prompt.trim()}
+              onClick={generateImage}
+            >
+              สร้างภาพ
+            </GenerateButton>
+          </Panel>
+
+          <GeneratedImagePanel
+            image={generatedImage}
+            loading={loading === "imageGenerate"}
+            onCopyPrompt={copyImagePrompt}
+            onDownload={downloadGeneratedImage}
+          />
+        </div>
+      )}
     </section>
   );
 }
@@ -517,6 +679,71 @@ function InlineResult({
         className="min-h-[280px] w-full resize-y rounded-xl border border-border bg-background/70 p-3 text-sm leading-7 text-foreground outline-none"
       />
     </div>
+  );
+}
+
+function GeneratedImagePanel({
+  image,
+  loading,
+  onCopyPrompt,
+  onDownload,
+}: {
+  image: GeneratedImage | null;
+  loading: boolean;
+  onCopyPrompt: () => void;
+  onDownload: () => void;
+}) {
+  return (
+    <section className="glass-card rounded-3xl p-4 md:p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-xl font-bold">ผลลัพธ์ภาพ</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Gemini 3.1 Flash Image ผ่าน server ของเว็บ
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <IconButton onClick={onCopyPrompt} disabled={!image} label="คัดลอกพรอมต์">
+            <Copy className="h-4 w-4" />
+          </IconButton>
+          <IconButton onClick={onDownload} disabled={!image} label="ดาวน์โหลด">
+            <Download className="h-4 w-4" />
+          </IconButton>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-surface/70">
+        {loading ? (
+          <div className="flex min-h-[520px] flex-col items-center justify-center gap-3 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin text-neon-green" />
+            <p className="text-sm font-bold">กำลังสร้างภาพ...</p>
+          </div>
+        ) : image ? (
+          <>
+            <img
+              src={image.dataUrl}
+              alt="Generated by Gemini"
+              className="max-h-[620px] w-full bg-background object-contain"
+            />
+            <div className="space-y-2 border-t border-white/10 p-4 text-xs text-muted-foreground">
+              <p className="font-bold text-foreground">{image.model}</p>
+              <p>{image.provider}</p>
+              {image.text ? <p className="leading-5">{image.text}</p> : null}
+            </div>
+          </>
+        ) : (
+          <div className="flex min-h-[520px] flex-col items-center justify-center gap-3 p-6 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neon-green/10 text-neon-green">
+              <ImagePlus className="h-7 w-7" />
+            </span>
+            <p className="text-sm font-bold text-foreground">ภาพที่สร้างจะแสดงตรงนี้</p>
+            <p className="max-w-sm text-xs leading-5 text-muted-foreground">
+              ใส่พรอมต์หรือดึงจากเครื่องมือออกแบบพรอมต์ แล้วกดสร้างภาพ
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 

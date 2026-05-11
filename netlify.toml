@@ -19,6 +19,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/image-generate"
+  to = "/.netlify/functions/image-generate"
+  status = 200
+
+[[redirects]]
   from = "/api/sync"
   to = "/.netlify/functions/sync"
   status = 200
